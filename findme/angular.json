@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "cli": {
+    "defaultCollection": "@nativescript/schematics"
+    },
+    "projects": {
+    "findme": {
+        "root": "",
+        "sourceRoot": "src",
+        "projectType": "application",
+        "prefix": "fm"
+    }
+    },
+    "defaultProject": "findme"
+}

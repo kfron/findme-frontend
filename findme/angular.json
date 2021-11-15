@@ -11,5 +11,10 @@
         "prefix": "fm"
     }
     },
+    "schematics": {
+      "@schematics/angular:component": {
+        "style": "scss"
+      }
+    },
     "defaultProject": "findme"
 }

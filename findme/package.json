@@ -14,8 +14,10 @@
     "@angular/router": "^12.2.13",
     "@nativescript/angular": "^12.2.0",
     "@nativescript/core": "^8.1.5",
+    "@nativescript/localize": "^5.0.4",
     "@nativescript/theme": "^3.0.2",
     "@nativescript/unit-test-runner": "^2.0.5",
+    "nativescript-ui-listview": "^10.0.2",
     "rxjs": "~7.3.0",
     "zone.js": "~0.11.4"
   },

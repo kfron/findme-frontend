@@ -1,10 +1,10 @@
-import { HttpClientModule } from '@angular/common/http'
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core'
-import { NativeScriptModule } from '@nativescript/angular'
+import { NativeScriptCommonModule, NativeScriptHttpClientModule, NativeScriptModule } from '@nativescript/angular'
 import { AppRoutingModule } from './app-routing.module'
 import { AppComponent } from './app.component'
 import { CoreModule } from './core/core.module'
 import { HomeModule } from './features/home/home.module'
+import { NativeScriptLocalizeModule } from '@nativescript/localize/angular'
 
 
 const modules = [
@@ -12,7 +12,9 @@ const modules = [
   AppRoutingModule,
   CoreModule,
   HomeModule,
-  HttpClientModule
+  NativeScriptCommonModule,
+  NativeScriptHttpClientModule,
+  NativeScriptLocalizeModule
 ]
 
 @NgModule({

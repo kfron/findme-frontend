@@ -1,3 +1,25 @@
+<ActionBar>
+    <!-- Should remove the navigation button -->
+    <NavigationButton ios:visibility="collapsed"></NavigationButton>
+    <Label text="Browse" horizontalAlignment="center"></Label>
+</ActionBar>
+
 <GridLayout>
-    <Button text="missing-pet-ad-list works!" class="btn btn-primary"></Button>
+    <RadListView [items]="ads" (itemTap)="onAdItemTap($event)" class="ads-list">
+        <ng-template tkListItemTemplate let-ad="item">
+            <StackLayout class="ad-item-container">
+                <GridLayout class="ad-info" rows="*" columns="*,*,*">
+                    <Label [text]="'Name:' + ad?.name" col="0"></Label>
+                    <Label [text]="ad?.age" col="1"></Label>
+                    <Label [text]="ad?.ID" col="2"></Label>
+                </GridLayout>
+                <Image
+                    class="ad-image"
+                    src="https://via.placeholder.com/300.png"
+                    stretch="none"
+                    lodeMode="async">
+                </Image>
+            </StackLayout>
+        </ng-template>
+    </RadListView>
 </GridLayout>

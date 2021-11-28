@@ -5,11 +5,11 @@
                 <GridLayout class="ad-info" rows="*" columns="*,*,*">
                     <Label [text]="ad?.name" col="0"></Label>
                     <Label [text]="ad?.age" col="1"></Label>
-                    <Label [text]="ad?.ID" col="2"></Label>
+                    <Label [text]="ad?.id" col="2"></Label>
                 </GridLayout>
                 <Image
                     class="ad-image"
-                    [src]="ad?.pic"
+                    [src]="ad?.imgUrl"
                     height=300px
                     stretch="aspectFit"
                     lodeMode="async">

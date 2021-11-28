@@ -3,6 +3,7 @@ import { RouterExtensions } from '@nativescript/angular';
 import { ObservableArray } from '@nativescript/core';
 import { ListViewEventData } from 'nativescript-ui-listview';
 import { Subscription } from 'rxjs';
+import { Ad, AdResponse } from '../../ads.model';
 import { HomeService } from './../../home.service';
 
 @Component({
@@ -15,15 +16,15 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription
 
-  ads: ObservableArray<any> = new ObservableArray<any>([])
+  ads: ObservableArray<Ad> = new ObservableArray<Ad>([])
 
   constructor(private homeService: HomeService, private routerExtensions: RouterExtensions) { }
 
   ngOnInit(): void {
     this.subscription = this.homeService
       .getAdsList()
-      .subscribe((ads: Array<any>) => {
-        this.ads = new ObservableArray(ads)
+      .subscribe((ads: AdResponse) => {
+        this.ads = new ObservableArray(ads.data)
       })
   }
 
@@ -35,8 +36,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
   }
 
   onAdItemTap(args: ListViewEventData) {
-    const tappedAdItem = args.view.bindingContext
-    this.routerExtensions.navigate(['/home/ad-details', tappedAdItem.ID], {
+    const tappedAdItem = (args.view.bindingContext as Ad)
+    this.routerExtensions.navigate(['/home/ad-details', tappedAdItem.id], {
       animated: true,
       transition: {
         name: 'slide',

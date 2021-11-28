@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { HomeService } from './../../home.service';
 
 @Component({
+  moduleId: module.id,
   selector: 'fm-missing-pet-ad-list',
   templateUrl: './missing-pet-ad-list.component.html',
   styleUrls: ['./missing-pet-ad-list.component.scss']
@@ -16,7 +17,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
   ads: ObservableArray<any> = new ObservableArray<any>([])
 
-  constructor(private homeService: HomeService, private routerExtension: RouterExtensions) { }
+  constructor(private homeService: HomeService, private routerExtensions: RouterExtensions) { }
 
   ngOnInit(): void {
     this.subscription = this.homeService
@@ -35,7 +36,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
   onAdItemTap(args: ListViewEventData) {
     const tappedAdItem = args.view.bindingContext
-    this.routerExtension.navigate(['/home/ad-details', tappedAdItem.ID], {
+    this.routerExtensions.navigate(['/home/ad-details', tappedAdItem.ID], {
       animated: true,
       transition: {
         name: 'slide',

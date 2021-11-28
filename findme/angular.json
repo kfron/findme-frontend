@@ -14,25 +14,19 @@
     "schematics": {
       "@schematics/angular:component": {
         "styleext": "scss",
-        "spec": false
+        "skipTests": true
       },
       "@schematics/angular:class": {
-        "spec": false
+        "skipTests": true
       },
       "@schematics/angular:directive": {
-        "spec": false
-      },
-      "@schematics/angular:guard": {
-        "spec": false
-      },
-      "@schematics/angular:module": {
-        "spec": false
+        "skipTests": true
       },
       "@schematics/angular:pipe": {
-        "spec": false
+        "skipTests": true
       },
       "@schematics/angular:service": {
-        "spec": false
+        "skipTests": true
       }
     },
     "defaultProject": "findme"

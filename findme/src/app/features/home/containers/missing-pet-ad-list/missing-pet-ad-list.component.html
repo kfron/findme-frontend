@@ -1,22 +1,17 @@
-<ActionBar>
-    <!-- Should remove the navigation button -->
-    <NavigationButton ios:visibility="collapsed"></NavigationButton>
-    <Label text="Browse" horizontalAlignment="center"></Label>
-</ActionBar>
-
 <GridLayout>
     <RadListView [items]="ads" (itemTap)="onAdItemTap($event)" class="ads-list">
         <ng-template tkListItemTemplate let-ad="item">
             <StackLayout class="ad-item-container">
                 <GridLayout class="ad-info" rows="*" columns="*,*,*">
-                    <Label [text]="'Name:' + ad?.name" col="0"></Label>
+                    <Label [text]="ad?.name" col="0"></Label>
                     <Label [text]="ad?.age" col="1"></Label>
                     <Label [text]="ad?.ID" col="2"></Label>
                 </GridLayout>
                 <Image
                     class="ad-image"
-                    src="https://via.placeholder.com/300.png"
-                    stretch="none"
+                    [src]="ad?.pic"
+                    height=300px
+                    stretch="aspectFit"
                     lodeMode="async">
                 </Image>
             </StackLayout>

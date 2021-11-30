@@ -32,19 +32,14 @@ const ads = [{
     ]
   }];
 
-/* GET users listing. */
 router.get('/getAdsList', function(req, res, next) {
-  res.json({
-    data: ads
-  })
+  res.json(ads)
 });
 
 router.get('/getAd', function(req, res, next) {
     let id = +req.query.id;
     let ad = ads.filter((ad) => ad.id === id)
-    res.json({
-      data: ad
-    })
+    res.json(ad)
   });
 
 module.exports = router;

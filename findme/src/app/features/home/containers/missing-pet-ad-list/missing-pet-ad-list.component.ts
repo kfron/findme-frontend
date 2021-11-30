@@ -3,7 +3,7 @@ import { RouterExtensions } from '@nativescript/angular';
 import { ObservableArray } from '@nativescript/core';
 import { ListViewEventData } from 'nativescript-ui-listview';
 import { Subscription } from 'rxjs';
-import { Ad, AdResponse } from '../../ads.model';
+import { Ad } from '../../ads.model';
 import { HomeService } from './../../home.service';
 
 @Component({
@@ -23,8 +23,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription = this.homeService
       .getAdsList()
-      .subscribe((ads: AdResponse) => {
-        this.ads = new ObservableArray(ads.data)
+      .subscribe((ads: Ad[]) => {
+        this.ads = new ObservableArray(ads)
       })
   }
 

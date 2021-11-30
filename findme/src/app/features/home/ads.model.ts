@@ -1,7 +1,3 @@
-export interface AdResponse {
-    data: Array<Ad>
-}
-
 export interface Ad {
     id: number,
     name: string,

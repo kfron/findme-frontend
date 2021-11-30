@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AdResponse } from './ads.model';
+import { Ad } from './ads.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +11,12 @@ export class HomeService {
 
   constructor(private http: HttpClient) { }
 
-  getAdsList(): Observable<AdResponse> {
-    return (this.http.get(this.serverUrl+"/getAdsList") as Observable<AdResponse>);
+  getAdsList(): Observable<Ad[]> {
+    return (this.http.get(this.serverUrl+"/getAdsList") as Observable<Ad[]>);
   }
 
-  getAdByid(id: number): Observable<AdResponse> {
-    return (this.http.get(this.serverUrl+"/getAd?id="+id) as Observable<AdResponse>);
+  getAdByid(id: number): Observable<Ad[]> {
+    return (this.http.get(this.serverUrl+"/getAd?id="+id) as Observable<Ad[]>);
   }
 
 }

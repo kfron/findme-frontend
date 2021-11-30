@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterExtensions } from '@nativescript/angular';
 import { Subscription } from 'rxjs';
 import { Ad } from '../../ads.model';
-import { AdResponse } from './../../ads.model';
 import { HomeService } from './../../home.service';
 
 @Component({
@@ -25,8 +24,8 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
     if (id) {
       this.subscription = this.homeService
       .getAdByid(id)
-      .subscribe((ad: AdResponse) => {
-        this.ad = ad.data[0]
+      .subscribe((ad: Ad[]) => {
+        this.ad = ad[0]
       })
     }
   }

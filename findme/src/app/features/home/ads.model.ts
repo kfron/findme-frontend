@@ -1,8 +1,10 @@
 export interface Ad {
     id: number,
+    user_id: number,
     name: string,
     age: number,
-    imgUrl: string,
+    image: string,
+    description: string,
     localizations: Array<Loc>
 }
 

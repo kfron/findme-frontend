@@ -1,8 +1,9 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const ads = require('../services/ads');
 
-const ads = [{
-    id: 1234,
+const adsobj = [{
+    id: 1,
     name: "Kevin",
     age: 12,
     imgUrl: "https://hips.hearstapps.com/ghk.h-cdn.co/assets/17/30/2560x3839/australian-shepherd.jpg?resize=980:*",
@@ -13,7 +14,7 @@ const ads = [{
     ]
   },
   {
-    id: 1232,
+    id: 2,
     name: "Max",
     age: 4,
     imgUrl: "https://hips.hearstapps.com/ghk.h-cdn.co/assets/16/08/gettyimages-464163411.jpg?crop=1.0xw:1xh;center,top&resize=980:*",
@@ -22,7 +23,7 @@ const ads = [{
     ]
   },
   {
-    id: 3233,
+    id: 3,
     name: "Mufinka",
     age: 1,
     imgUrl: "https://hips.hearstapps.com/ghk.h-cdn.co/assets/17/30/pembroke-welsh-corgi.jpg?crop=1xw:0.9997114829774957xh;center,top&resize=980:*",
@@ -32,14 +33,23 @@ const ads = [{
     ]
   }];
 
-router.get('/getAdsList', function(req, res, next) {
-  res.json(ads)
+router.get('/getAdsList', async function(req, res, next) {
+  try {
+    res.json(await ads.getAdsList());
+  } catch (err) {
+    console.error(`Error while getting ads `, err.message);
+    next(err);
+  }
 });
 
-router.get('/getAd', function(req, res, next) {
+router.get('/getAd', async function(req, res, next) {
     let id = +req.query.id;
-    let ad = ads.filter((ad) => ad.id === id)
-    res.json(ad)
+    try {
+      res.json(await ads.getAd(id));
+    } catch (err) {
+      console.error(`Error while getting ad `, err.message);
+      next(err);
+    }
   });
 
 module.exports = router;

@@ -24,3 +24,15 @@ Stworzenie projektu
 
 Uzyty emulator:
 Nexus 4 API 28 Software Graphics Cold Boot
+
+
+Uruchamianie projektu:
+Frontend -
+	/Projekt/findme/ $ ns run android
+Backend -
+	/Projekt/backend/ $ npm start
+Backend Debug -
+	/Projekt/backend/ $ DEBUG=backend:* npm start
+	
+Connect to db from terminal
+	psql -d findme

@@ -7,16 +7,16 @@ import { Ad } from './ads.model';
   providedIn: 'root'
 })
 export class HomeService {
-  private serverUrl = "http://10.0.2.2:3000/ads";
+  private serverUrl = "http://10.0.2.2:3000/";
 
   constructor(private http: HttpClient) { }
 
   getAdsList(): Observable<Ad[]> {
-    return (this.http.get(this.serverUrl+"/getAdsList") as Observable<Ad[]>);
+    return (this.http.get(this.serverUrl+"ads/getAdsList") as Observable<Ad[]>);
   }
 
   getAdByid(id: number): Observable<Ad[]> {
-    return (this.http.get(this.serverUrl+"/getAd?id="+id) as Observable<Ad[]>);
+    return (this.http.get(this.serverUrl+"ads/getAd?id="+id) as Observable<Ad[]>);
   }
 
 }

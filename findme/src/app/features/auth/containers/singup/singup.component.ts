@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
+import { TextField } from '@nativescript/core';
 import { AuthService } from '../../auth.service';
 
 @Component({
@@ -10,20 +11,47 @@ import { AuthService } from '../../auth.service';
 })
 export class SingupComponent implements OnInit {
 
+  email = "";
+  password = "";
+  confirmPassword = "";
+
   constructor(private authService: AuthService, private routerExtensions: RouterExtensions) { }
 
   ngOnInit(): void { }
 
   signup(): void {
-    this.authService.signup("anon", "anon", "anon@anony.com","123123123", "dupa1", false)
+    if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
+      this.authService.signup("anon", "anon", this.email, "123123123", this.password, false)
         .subscribe((res) => {
-          if(res.validated){
-            this.routerExtensions.navigate(['/auth'])
+          if (res.validated) {
+            this.routerExtensions.navigate(['/home'])
           } else {
-            this.routerExtensions.navigate(['/auth/signup'])
+            alert({
+              title: "Find Me",
+              okButtonText: "OK",
+              message: "We couldn't create your account."
+            });
+            this.email = "";
+            this.password = "";
+            this.confirmPassword = "";
           }
         })
-      
+    }
+
+  }
+
+  onReturnPress(args) {
+    let textField = <TextField>args.object;
+
+    setTimeout(() => {
+      textField.dismissSoftInput();
+    }, 100);
+
+    this[textField.className] = textField.text;
+  }
+
+  toggleForm() {
+    this.routerExtensions.navigate(['/auth'])
   }
 
 }

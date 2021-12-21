@@ -47,4 +47,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
     })
   }
 
+  createNewAd() {
+    this.routerExtensions.navigate(['/home/ad-create'])
+  }
+
 }

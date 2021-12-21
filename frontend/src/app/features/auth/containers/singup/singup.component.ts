@@ -1,3 +1,4 @@
+import { User, Error } from './../../auth.model';
 import { Component, OnInit } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
@@ -21,19 +22,19 @@ export class SingupComponent implements OnInit {
 
   signup(): void {
     if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
-      this.authService.signup("anon", "anon", this.email, "123123123", this.password, false)
+      this.authService.signup({email: this.email, password: this.password, is_admin: false} as User)
         .subscribe((res) => {
-          if (res.validated) {
-            this.routerExtensions.navigate(['/home'])
-          } else {
+          if ('error' in res) {
             alert({
               title: "Find Me",
               okButtonText: "OK",
-              message: "We couldn't create your account."
+              message: res.error
             });
             this.email = "";
             this.password = "";
             this.confirmPassword = "";
+          } else {
+            this.routerExtensions.navigate(['/home']);
           }
         })
     }

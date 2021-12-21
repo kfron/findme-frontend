@@ -22,9 +22,7 @@ export class LoginComponent implements OnInit {
     if (this.email && this.password) {
       this.authService.login(this.email, this.password)
         .subscribe((res) => {
-          if (res.validated) {
-            this.routerExtensions.navigate(['/home/'])
-          } else {
+          if ('error' in res) {
             alert({
               title: "Find Me",
               okButtonText: "OK",
@@ -32,6 +30,8 @@ export class LoginComponent implements OnInit {
             });
             this.email = "";
             this.password = "";
+          } else {
+            this.routerExtensions.navigate(['/home/']);
           }
         })
     }

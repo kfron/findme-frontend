@@ -1,3 +1,4 @@
+import { MissingPetAdCreateComponent } from './containers/missing-pet-ad-create/missing-pet-ad-create.component';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { NativeScriptCommonModule, NativeScriptHttpClientModule } from '@nativescript/angular';
 import { NativeScriptLocalizeModule } from '@nativescript/localize/angular';
@@ -8,7 +9,8 @@ import { HomeRoutingModule } from './home-routing.module';
 
 const components = [
   MissingPetAdListComponent,
-  MissingPetAdDetailsComponent
+  MissingPetAdDetailsComponent,
+  MissingPetAdCreateComponent
 ]
 
 @NgModule({

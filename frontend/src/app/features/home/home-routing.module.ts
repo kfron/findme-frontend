@@ -1,3 +1,4 @@
+import { MissingPetAdCreateComponent } from './containers/missing-pet-ad-create/missing-pet-ad-create.component';
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { NativeScriptRouterModule } from '@nativescript/angular';
@@ -7,7 +8,8 @@ import { MissingPetAdListComponent } from './containers/missing-pet-ad-list/miss
 
 const routes: Routes = [
   { path: '', component: MissingPetAdListComponent },
-  { path: 'ad-details/:id', component: MissingPetAdDetailsComponent }
+  { path: 'ad-details/:id', component: MissingPetAdDetailsComponent },
+  { path: 'ad-create', component: MissingPetAdCreateComponent}
 ]
 
 @NgModule({

@@ -7,7 +7,7 @@ import { Ad } from './ads.model';
   providedIn: 'root'
 })
 export class HomeService {
-  private serverUrl = "http://10.0.2.2:3000/";
+  private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
 
   constructor(private http: HttpClient) { }
 

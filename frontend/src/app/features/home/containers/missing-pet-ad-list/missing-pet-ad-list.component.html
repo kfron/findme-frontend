@@ -1,4 +1,4 @@
-<GridLayout>
+<FlexboxLayout class="flex-container">
     <RadListView [items]="ads" (itemTap)="onAdItemTap($event)" class="ads-list">
         <ng-template tkListItemTemplate let-ad="item">
             <StackLayout class="ad-item-container">
@@ -7,14 +7,13 @@
                     <Label [text]="ad?.age" col="1"></Label>
                     <Label [text]="ad?.id" col="2"></Label>
                 </GridLayout>
-                <Image
-                    class="ad-image"
-                    [src]="ad?.image"
-                    height=300px
-                    stretch="aspectFit"
-                    lodeMode="async">
+                <Image class="ad-image" [src]="ad?.image" height=300px stretch="aspectFill" lodeMode="async">
                 </Image>
             </StackLayout>
         </ng-template>
     </RadListView>
-</GridLayout>
+    <FlexboxLayout class="flex-btn-container">
+        <Button class="test-button" text="Map"></Button>
+        <Button class="test-button" text="Add" (tap)="createNewAd()"></Button>
+    </FlexboxLayout>
+</FlexboxLayout>

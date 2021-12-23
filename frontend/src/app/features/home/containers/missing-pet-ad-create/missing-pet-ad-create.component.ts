@@ -1,3 +1,4 @@
+import { AuthService } from './../../../auth/auth.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -6,10 +7,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./missing-pet-ad-create.component.scss']
 })
 export class MissingPetAdCreateComponent implements OnInit {
+  user = this.authService.currentUser
 
-  constructor() { }
-
+  constructor(private authService: AuthService) { }
   ngOnInit(): void {
+    
   }
 
 }

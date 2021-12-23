@@ -21,17 +21,23 @@ export class LoginComponent implements OnInit {
   login(): void {
     if (this.email && this.password) {
       this.authService.login(this.email, this.password)
-        .subscribe((res) => {
-          if ('error' in res) {
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.authService.currentUser = res;
+            this.routerExtensions.navigate(['/home/']);
+          },
+          error: (err) => {
+            console.log(err.error.message)
             alert({
               title: "Find Me",
               okButtonText: "OK",
-              message: "We couldn't find your account."
+              message: err.error.message
             });
-            this.email = "";
+            if(err.error.message !== 'Incorrect password.'){
+              this.email = "";
+            }
             this.password = "";
-          } else {
-            this.routerExtensions.navigate(['/home/']);
           }
         })
     }

@@ -16,14 +16,17 @@ export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService, private routerExtensions: RouterExtensions) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.email = "test";
+    this.password = "test";
+    this.login();
+  }
 
   login(): void {
     if (this.email && this.password) {
       this.authService.login(this.email, this.password)
         .subscribe({
           next: (res) => {
-            console.log(res);
             this.authService.currentUser = res;
             this.routerExtensions.navigate(['/home/']);
           },

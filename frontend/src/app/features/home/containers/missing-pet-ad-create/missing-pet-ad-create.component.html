@@ -1,2 +1,4 @@
-<Button text="missing-pet-ad-create works!" class="btn btn-primary"></Button>
-<Label [text]="user.email"></Label>
+<StackLayout>
+    <RadDataForm #adCreateDataForm [source]="ad" [metadata]="adMetadata" (commitAll)="commitTest()"></RadDataForm>
+    <Button (tap)="test()"></Button>
+</StackLayout>

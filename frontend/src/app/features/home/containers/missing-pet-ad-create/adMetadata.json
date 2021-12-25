@@ -1,0 +1,81 @@
+{
+    "isReadOnly": false,
+    "commitMode": "Manual",
+    "validationMode": "OnLostFocus",
+    "propertyAnnotations": [
+        {
+            "name": "name",
+            "displayName": "Name",
+            "index": 0,
+            "validators": [
+                {
+                    "name": "NonEmpty",
+                    "params": {
+                        "errorMessage": "Name cannot be empty."
+                    }
+                },
+                {
+                    "name": "MaximumLength",
+                    "params": {
+                        "length": 50,
+                        "errorMessage": "Name cannot be longer than 50 characters."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "age",
+            "displayName": "Age",
+            "index": 1,
+            "editor": "Number",
+            "validators": [
+                {
+                    "name": "NonEmpty",
+                    "params": {
+                        "errorMessage": "Age cannot be empty."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "image",
+            "displayName": "Image URL",
+            "index": 2,
+            "validators": [
+                {
+                    "name": "NonEmpty",
+                    "params": {
+                        "errorMessage": "Image cannot be empty."
+                    }
+                },
+                {
+                    "name": "MaximumLength",
+                    "params": {
+                        "length": 500,
+                        "errorMessage": "Image URL cannot be longer than 500 characters."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "description",
+            "displayName": "Tell us something about this pet",
+            "index": 3,
+            "validators": [
+                {
+                    "name": "NonEmpty",
+                    "params": {
+                        "errorMessage": "Description cannot be empty."
+                    }
+                },
+                {
+                    "name": "MaximumLength",
+                    "params": {
+                        "length": 500,
+                        "errorMessage": "Description cannot be longer than 500 characters."
+                    }
+                }
+            ]
+        }
+    ]
+}

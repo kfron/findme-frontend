@@ -1,4 +1,15 @@
-<StackLayout>
-    <RadDataForm #adCreateDataForm [source]="ad" [metadata]="adMetadata" (commitAll)="commitTest()"></RadDataForm>
-    <Button (tap)="test()"></Button>
-</StackLayout>
+<ScrollView>
+    <StackLayout>
+        <RadDataForm #adCreateDataForm [metadata]="adMetadata" [source]="ad" (commitAll)="commitTest()">
+            <TKEntityProperty tkDataFormProperty displayName="Image" name="image" index="3">
+                <EmptyValidator tkEntityPropertyValidators></EmptyValidator>
+                <TKCustomPropertyEditor tkEntityPropertyEditor (editorNeedsView)="editorNeedsView($event)"
+                    (editorHatToApplyValue)="editorHasToApplyValue($event)"
+                    (editorNeedsValue)="editorNeedsValue($event)">
+                </TKCustomPropertyEditor>
+            </TKEntityProperty>
+        </RadDataForm>
+        <Image [src]="url"></Image>
+        <Button text="Find this pet!" (tap)="test()"></Button>
+    </StackLayout>
+</ScrollView>

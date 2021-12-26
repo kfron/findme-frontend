@@ -14,6 +14,7 @@
     "@angular/router": "^12.2.13",
     "@nativescript/angular": "^12.2.0",
     "@nativescript/core": "^8.1.5",
+    "@nativescript/imagepicker": "^1.0.6",
     "@nativescript/localize": "^5.0.4",
     "@nativescript/theme": "^3.0.2",
     "@nativescript/unit-test-runner": "^2.0.5",

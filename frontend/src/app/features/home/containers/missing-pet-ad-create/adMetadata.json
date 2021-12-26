@@ -38,29 +38,9 @@
             ]
         },
         {
-            "name": "image",
-            "displayName": "Image URL",
-            "index": 2,
-            "validators": [
-                {
-                    "name": "NonEmpty",
-                    "params": {
-                        "errorMessage": "Image cannot be empty."
-                    }
-                },
-                {
-                    "name": "MaximumLength",
-                    "params": {
-                        "length": 500,
-                        "errorMessage": "Image URL cannot be longer than 500 characters."
-                    }
-                }
-            ]
-        },
-        {
             "name": "description",
             "displayName": "Tell us something about this pet",
-            "index": 3,
+            "index": 2,
             "validators": [
                 {
                     "name": "NonEmpty",

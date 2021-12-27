@@ -1,22 +1,55 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthService } from './../auth/auth.service';
 import { Ad } from './ads.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HomeService {
-  private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
+  //private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
+  private serverUrl = "http://10.0.2.2:5000/";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   getAdsList(): Observable<Ad[]> {
-    return (this.http.get(this.serverUrl+"ads/getAdsList") as Observable<Ad[]>);
+    return (this.http.get(this.serverUrl + "ads/getAdsList") as Observable<Ad[]>);
   }
 
   getAdByid(id: number): Observable<Ad[]> {
-    return (this.http.get(this.serverUrl+"ads/getAd?id="+id) as Observable<Ad[]>);
+    return (this.http.get(this.serverUrl + "ads/getAd?id=" + id) as Observable<Ad[]>);
+  }
+
+  createAd(name, age, image, description) {
+    var bghttp = require('@nativescript/background-http');
+    var session = bghttp.session('file-upload');
+    var request = {
+      url: this.serverUrl + "ads/createAd",
+      method: 'POST'
+    }
+    var params = [
+      { name: 'userId', value: this.authService.currentUser.id },
+      { name: 'name', value: name },
+      { name: 'age', value: age },
+      { name: 'image', filename: image, mimeType: "image/jpeg" },
+      { name: 'description', value: description }];
+
+    var task = session.multipartUpload(params, request);
+
+    task.on("error", (e) => {
+      // console log data
+      console.log(e);
+      console.log('error uploading file to server')
+    });
+
+    task.on("responded", (e) => {
+      alert({
+        title: "Success!",
+        okButtonText: "Great!",
+        message: "Thank you!\nLet's find this pet!"
+      });
+    })
   }
 
 }

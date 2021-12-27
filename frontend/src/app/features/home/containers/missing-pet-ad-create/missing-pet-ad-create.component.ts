@@ -1,12 +1,13 @@
-import { ButtonEditorHelper } from './buttonEditorHelper';
-import { Ad } from './../../ads.model';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AuthService } from './../../../auth/auth.service';
-import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
-import { ImagePicker } from '@nativescript/imagepicker';
-import { AndroidApplication } from '@nativescript/core';
-import { PropertyValidator } from 'nativescript-ui-dataform';
 import { registerElement } from '@nativescript/angular';
+import { AndroidApplication } from '@nativescript/core';
+import { ImagePicker } from '@nativescript/imagepicker';
+import { PropertyValidator } from 'nativescript-ui-dataform';
+import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
+import { AuthService } from './../../../auth/auth.service';
+import { Ad } from './../../ads.model';
+import { HomeService } from './../../home.service';
+import { ButtonEditorHelper } from './buttonEditorHelper';
 
 const metadata = require('./adMetadata.json');
 
@@ -27,7 +28,7 @@ export class MissingPetAdCreateComponent implements OnInit {
 
   context: ImagePicker = new ImagePicker({ mode: "single" })
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private homeService: HomeService,) { }
 
   @ViewChild('adCreateDataForm', { static: false }) adCreateDataForm: RadDataFormComponent;
 
@@ -35,21 +36,11 @@ export class MissingPetAdCreateComponent implements OnInit {
     this.ad = { name: '', age: null, image: '', description: '' } as Ad;
   }
 
-  async test() {
-    console.log("Before validation and commit");
-    console.log(this.ad);
+  async validateAndCommit() {
     let isValid = await this.adCreateDataForm.dataForm.validateAndCommitAll();
     if (isValid) {
-      console.log("Valid!");
-      console.log(this.ad);
-    } else {
-      console.log("Not valid");
-      console.log(this.ad);
+      this.homeService.createAd(this.ad.name, this.ad.age, this.ad.image, this.ad.description);
     }
-  }
-
-  commitTest() {
-    console.log("Commited!");
   }
 
   editorNeedsView(args) {
@@ -78,10 +69,12 @@ export class MissingPetAdCreateComponent implements OnInit {
 
   updateEditorValue(editorView, value) {
     this.buttonEditorHelper.buttonValue = value;
+    let splitUrl = this.url.split('/');
+    let imageName = splitUrl[splitUrl.length - 1];
     if (value === '')
       editorView.setText("(tap to choose)");
-    else 
-      editorView.setText(this.buttonEditorHelper.buttonValue + "\n (tap to change)");
+    else
+      editorView.setText(imageName + "\n (tap to change)");
   }
 
   handleTap(editorView, editor) {
@@ -93,13 +86,8 @@ export class MissingPetAdCreateComponent implements OnInit {
       })
       .then(selection => {
         selection.forEach(selected => {
-          console.log(selected);
           this.url = selected.android;
-          console.log("url: " + this.url);
-          let splitUrl = this.url.split('/');
-          let imageName = splitUrl[splitUrl.length - 1];
-          console.log(imageName);
-          this.updateEditorValue(editorView, imageName);
+          this.updateEditorValue(editorView, this.url);
           editor.notifyValueChanged();
         })
       })

@@ -1,16 +1,22 @@
-<ActionBar [title]="ad?.name">
-    <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
-  </ActionBar>
-<ScrollView height="100%">
-    <StackLayout>
-        <Image [src]="ad?.image"></Image>
-
+<FlexboxLayout class="flex-container">
+    <ActionBar [title]="ad?.name">
+        <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
+    </ActionBar>
+    <ScrollView height="100%" class="ad-details">
         <StackLayout>
-            <Label [text]="ad?.name"></Label>
-            <Label [text]="ad?.age"></Label>
-            <ng-container *ngFor="let loc of ad?.localizations">
-                <Label [text]="loc.x + ' ' + loc.y"></Label>
-            </ng-container>
+            <Image [src]="ad?.image"></Image>
+
+            <StackLayout>
+                <Label [text]="ad?.name"></Label>
+                <Label [text]="ad?.age"></Label>
+                <ng-container *ngFor="let loc of ad?.localizations">
+                    <Label [text]="loc.x + ' ' + loc.y"></Label>
+                </ng-container>
+            </StackLayout>
         </StackLayout>
-    </StackLayout>
-</ScrollView>
+    </ScrollView>
+    <FlexboxLayout class="flex-btn-container">
+        <Button class="ping-button" text="Ping"></Button>
+        <Button *ngIf='owner === true' class="edit-button" text="Edit" (tap)="onEditTap()"></Button>
+    </FlexboxLayout>
+</FlexboxLayout>

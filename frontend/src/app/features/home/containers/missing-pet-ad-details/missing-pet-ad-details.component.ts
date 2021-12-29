@@ -1,3 +1,4 @@
+import { AuthService } from './../../../auth/auth.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RouterExtensions } from '@nativescript/angular';
@@ -14,8 +15,9 @@ import { HomeService } from './../../home.service';
 export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription
+  owner = false
 
-  constructor(private activatedRoute: ActivatedRoute, private homeService: HomeService, private routerExtensions: RouterExtensions) { }
+  constructor(private authService: AuthService, private activatedRoute: ActivatedRoute, private homeService: HomeService, private routerExtensions: RouterExtensions) { }
 
   ad: Ad = undefined
 
@@ -25,8 +27,11 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
       this.subscription = this.homeService
       .getAdByid(id)
       .subscribe((ad: Ad[]) => {
-        this.ad = ad[0]
+        this.ad = ad[0];
+        this.owner = this.authService.currentUser.id === this.ad.user_id;
       })
+      
+      
     }
   }
 
@@ -39,6 +44,17 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 
   onBackButtonTap(): void {
     this.routerExtensions.backToPreviousPage()
+  }
+
+  onEditTap(): void {
+    this.routerExtensions.navigate(['/home/ad-edit', this.ad.id, this.ad.user_id, this.ad.name, this.ad.age, this.ad.image, this.ad.description], {
+      animated: true,
+      transition: {
+        name: 'slide',
+        duration: 200,
+        curve: 'ease',
+      }
+    })
   }
 
 }

@@ -38,7 +38,6 @@ export class HomeService {
     var task = session.multipartUpload(params, request);
 
     task.on("error", (e) => {
-      // console log data
       console.log(e);
       console.log('error uploading file to server')
     });
@@ -50,6 +49,11 @@ export class HomeService {
         message: "Thank you!\nLet's find this pet!"
       });
     })
+  }
+
+  updateAd(id, name, age, image, description) {
+    let res = this.http.put(this.serverUrl + "ads/updateAd", { id: id, name: name, age: age, image: image, description: description });
+    return res;
   }
 
 }

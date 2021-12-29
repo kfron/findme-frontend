@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
 import { AuthService } from '../../auth.service';
@@ -10,8 +11,8 @@ import { User } from './../../auth.model';
   templateUrl: './singup.component.html',
   styleUrls: ['./singup.component.scss']
 })
-export class SingupComponent implements OnInit {
-
+export class SingupComponent implements OnInit, OnDestroy {
+  private subscription: Subscription;
   email = "";
   password = "";
   confirmPassword = "";
@@ -20,9 +21,16 @@ export class SingupComponent implements OnInit {
 
   ngOnInit(): void { }
 
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+      this.subscription = null
+    }
+  }
+
   signup(): void {
     if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
-      this.authService.signup({email: this.email, password: this.password, is_admin: false} as User)
+      this.subscription = this.authService.signup({email: this.email, password: this.password, is_admin: false} as User)
         .subscribe({
           next: (res) => {
             this.authService.currentUser = res;

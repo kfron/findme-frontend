@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
 import { AuthService } from '../../auth.service';
@@ -9,7 +10,9 @@ import { AuthService } from '../../auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
+
+  private subscription: Subscription;
 
   email = "";
   password = "";
@@ -22,9 +25,16 @@ export class LoginComponent implements OnInit {
     this.login();
   }
 
+  ngOnDestroy(): void {
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+      this.subscription = null
+    }
+  }
+
   login(): void {
     if (this.email && this.password) {
-      this.authService.login(this.email, this.password)
+      this.subscription = this.authService.login(this.email, this.password)
         .subscribe({
           next: (res) => {
             this.authService.currentUser = res;
@@ -37,7 +47,7 @@ export class LoginComponent implements OnInit {
               okButtonText: "OK",
               message: err.error.message
             });
-            if(err.error.message !== 'Incorrect password.'){
+            if (err.error.message !== 'Incorrect password.') {
               this.email = "";
             }
             this.password = "";

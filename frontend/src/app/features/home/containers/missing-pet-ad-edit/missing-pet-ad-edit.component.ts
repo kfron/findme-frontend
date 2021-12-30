@@ -19,7 +19,7 @@ const metadata = require('./adMetadata.json');
   styleUrls: ['./missing-pet-ad-edit.component.scss']
 })
 export class MissingPetAdEditComponent implements OnInit, OnDestroy {
-  private subscription: Subscription
+  private subscriptions: Subscription[] = []
 
   adMetadata = JSON.parse(JSON.stringify(metadata));
   buttonEditorHelper: ButtonEditorHelper;
@@ -30,7 +30,12 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 
   context: ImagePicker = new ImagePicker({ mode: "single" })
 
-  constructor(private routerExtensions: RouterExtensions,private homeService: HomeService, private activatedRoute: ActivatedRoute, private authService: AuthService) { }
+  constructor(
+    private routerExtensions: RouterExtensions,
+    private homeService: HomeService,
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService) {
+  }
 
   @ViewChild('adEditDataForm', { static: false }) adEditDataForm: RadDataFormComponent;
 
@@ -42,19 +47,20 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-      this.subscription = null
+    while (this.subscriptions.length != 0) {
+      var sub = this.subscriptions.pop();
+      sub.unsubscribe();
     }
   }
 
   async validateAndCommit() {
     let isValid = await this.adEditDataForm.dataForm.validateAndCommitAll();
     if (isValid) {
-      this.subscription =
+      this.subscriptions.push(
         this.homeService
           .updateAd(this.id, this.ad.name, this.ad.age, this.ad.image, this.ad.description)
-          .subscribe();
+          .subscribe()
+      );
       alert({
         title: "Success!",
         okButtonText: "OK",
@@ -116,4 +122,18 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
       })
   }
 
+  onDeleteTap() {
+    this.subscriptions.push(
+      this.homeService.deleteAd(this.id).subscribe()
+    );
+    alert({
+      title: "Success!",
+      okButtonText: "OK",
+      message: "Ad deleted."
+    });
+  }
+
+  onBackButtonTap() {
+    this.routerExtensions.backToPreviousPage()
+  }
 }

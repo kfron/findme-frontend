@@ -16,7 +16,7 @@
         </StackLayout>
     </ScrollView>
     <FlexboxLayout class="flex-btn-container">
-        <Button class="ping-button" text="Ping"></Button>
+        <Button *ngIf='owner !== true' class="ping-button" text="Ping"></Button>
         <Button *ngIf='owner === true' class="edit-button" text="Edit" (tap)="onEditTap()"></Button>
     </FlexboxLayout>
 </FlexboxLayout>

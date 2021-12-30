@@ -20,12 +20,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService, private routerExtensions: RouterExtensions) { }
 
   ngOnInit(): void {
+    console.log("Init login");
     this.email = "test";
     this.password = "test";
     this.login();
   }
 
   ngOnDestroy(): void {
+    console.log("Destroyed login");
     if (this.subscription) {
       this.subscription.unsubscribe()
       this.subscription = null

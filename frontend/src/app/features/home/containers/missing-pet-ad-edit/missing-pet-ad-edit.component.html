@@ -1,15 +1,21 @@
-<ScrollView>
-    <StackLayout>
-        <RadDataForm #adEditDataForm [metadata]="adMetadata" [source]="ad">
-            <TKEntityProperty tkDataFormProperty displayName="Image" name="image" index="3">
-                <EmptyValidator tkEntityPropertyValidators></EmptyValidator>
-                <TKCustomPropertyEditor tkEntityPropertyEditor (editorNeedsView)="editorNeedsView($event)"
-                    (editorHatToApplyValue)="editorHasToApplyValue($event)"
-                    (editorNeedsValue)="editorNeedsValue($event)">
-                </TKCustomPropertyEditor>
-            </TKEntityProperty>
-        </RadDataForm>
-        <Image [src]="url"></Image>
-        <Button text="Find this pet!" (tap)="validateAndCommit()"></Button>
-    </StackLayout>
-</ScrollView>
+<FlexboxLayout class="flex-container">
+    <ActionBar [title]="ad?.name">
+        <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
+    </ActionBar>
+    <ScrollView>
+        <StackLayout>
+            <RadDataForm #adEditDataForm [metadata]="adMetadata" [source]="ad">
+                <TKEntityProperty tkDataFormProperty displayName="Image" name="image" index="3">
+                    <EmptyValidator tkEntityPropertyValidators></EmptyValidator>
+                    <TKCustomPropertyEditor tkEntityPropertyEditor (editorNeedsView)="editorNeedsView($event)"
+                        (editorHatToApplyValue)="editorHasToApplyValue($event)"
+                        (editorNeedsValue)="editorNeedsValue($event)">
+                    </TKCustomPropertyEditor>
+                </TKEntityProperty>
+            </RadDataForm>
+            <Image [src]="url"></Image>
+            <Button text="Update" (tap)="validateAndCommit()"></Button>
+            <Button class="delete-btn" text="Delete" (tap)="onDeleteTap()"></Button>
+        </StackLayout>
+    </ScrollView>
+</FlexboxLayout>

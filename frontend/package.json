@@ -15,6 +15,7 @@
     "@nativescript/angular": "^12.2.0",
     "@nativescript/background-http": "^5.0.2",
     "@nativescript/core": "^8.1.5",
+    "@nativescript/geolocation": "^8.0.2",
     "@nativescript/imagepicker": "^1.0.6",
     "@nativescript/localize": "^5.0.4",
     "@nativescript/theme": "^3.0.2",

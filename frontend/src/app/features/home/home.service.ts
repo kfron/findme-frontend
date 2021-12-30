@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from './../auth/auth.service';
@@ -54,6 +54,11 @@ export class HomeService {
   updateAd(id, name, age, image, description) {
     let res = this.http.put(this.serverUrl + "ads/updateAd", { id: id, name: name, age: age, image: image, description: description });
     return res;
+  }
+
+  deleteAd(id) {
+    let params = new HttpParams().set('id', id);
+    return this.http.delete(this.serverUrl + 'ads/deleteAd', {params: params});
   }
 
 }

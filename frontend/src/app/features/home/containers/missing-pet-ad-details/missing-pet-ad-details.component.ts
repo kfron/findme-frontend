@@ -5,6 +5,7 @@ import { RouterExtensions } from '@nativescript/angular';
 import { Subscription } from 'rxjs';
 import { Ad } from '../../ads.model';
 import { HomeService } from './../../home.service';
+import { NavigatedData, Page } from '@nativescript/core';
 
 @Component({
   moduleId: module.id,
@@ -14,31 +15,37 @@ import { HomeService } from './../../home.service';
 })
 export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 
-  private subscription: Subscription
+  private subscriptions: Subscription[] = []
   owner = false
 
-  constructor(private authService: AuthService, private activatedRoute: ActivatedRoute, private homeService: HomeService, private routerExtensions: RouterExtensions) { }
+  constructor(
+    private authService: AuthService,
+    private activatedRoute: ActivatedRoute,
+    private homeService: HomeService,
+    private routerExtensions: RouterExtensions,
+    private page: Page) {
+    this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
+  }
 
   ad: Ad = undefined
 
   ngOnInit(): void {
     const id = +this.activatedRoute.snapshot.params.id
     if (id) {
-      this.subscription = this.homeService
-      .getAdByid(id)
-      .subscribe((ad: Ad[]) => {
-        this.ad = ad[0];
-        this.owner = this.authService.currentUser.id === this.ad.user_id;
-      })
-      
-      
+      this.subscriptions.push(this.homeService
+        .getAdByid(id)
+        .subscribe((ad: Ad[]) => {
+          this.ad = ad[0];
+          this.owner = this.authService.currentUser.id === this.ad.user_id;
+        }));
     }
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-      this.subscription = null
+    console.log("Destroyed details");
+    while (this.subscriptions.length != 0) {
+      var sub = this.subscriptions.pop();
+      sub.unsubscribe();
     }
   }
 
@@ -55,6 +62,17 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
         curve: 'ease',
       }
     })
+  }
+
+  onNavigatedTo(data: NavigatedData) {
+    if (data.isBackNavigation) {
+      this.subscriptions.push(this.homeService
+        .getAdByid(this.ad.id)
+        .subscribe((ad: Ad[]) => {
+          this.ad = ad[0];
+          this.owner = this.authService.currentUser.id === this.ad.user_id;
+        }));
+    }
   }
 
 }

@@ -42,7 +42,6 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log("Destroyed details");
     while (this.subscriptions.length != 0) {
       var sub = this.subscriptions.pop();
       sub.unsubscribe();

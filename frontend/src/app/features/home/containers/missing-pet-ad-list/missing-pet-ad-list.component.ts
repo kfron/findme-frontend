@@ -66,4 +66,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
     }
   }
 
+  onMapButtonTap() {
+    this.routerExtensions.navigateByUrl('/map')
+  }
+
 }

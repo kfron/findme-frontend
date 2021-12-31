@@ -1,1 +1,8 @@
-<Button text="map-general-view works!" class="btn btn-primary"></Button>
+<StackLayout>
+    <GridLayout>
+        <MapView 
+            (mapReady)="onMapReady($event)"
+            (markerSelect)="onMarkerSelect($event)">
+        </MapView>
+    </GridLayout>
+</StackLayout>

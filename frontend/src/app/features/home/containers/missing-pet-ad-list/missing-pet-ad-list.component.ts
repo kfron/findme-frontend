@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
-import { EventData, NavigatedData, ObservableArray, Page } from '@nativescript/core';
+import { NavigatedData, ObservableArray, Page } from '@nativescript/core';
 import { ListViewEventData } from 'nativescript-ui-listview';
 import { Subscription } from 'rxjs';
 import { Ad } from '../../ads.model';

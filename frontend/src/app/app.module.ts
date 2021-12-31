@@ -1,3 +1,4 @@
+import { MapModule } from './features/map/map.module';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core'
 import { NativeScriptCommonModule, NativeScriptHttpClientModule, NativeScriptModule } from '@nativescript/angular'
 import { AppRoutingModule } from './app-routing.module'
@@ -12,6 +13,7 @@ const modules = [
   AppRoutingModule,
   CoreModule,
   HomeModule,
+  MapModule,
   NativeScriptCommonModule,
   NativeScriptHttpClientModule,
   NativeScriptLocalizeModule

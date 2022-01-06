@@ -1,8 +1,7 @@
 <StackLayout>
-    <GridLayout>
-        <MapView 
-            (mapReady)="onMapReady($event)"
-            (markerSelect)="onMarkerSelect($event)">
-        </MapView>
-    </GridLayout>
+    <MapView 
+        (mapReady)="onMapReady($event)" 
+        (markerSelect)="onMarkerSelect($event)"
+        (markerInfoWindowTapped)="onInfoWindowTapped($event)">
+    </MapView>
 </StackLayout>

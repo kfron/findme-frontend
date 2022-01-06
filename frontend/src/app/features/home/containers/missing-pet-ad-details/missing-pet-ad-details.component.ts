@@ -63,6 +63,17 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
     })
   }
 
+  onPingTap(): void {
+    this.routerExtensions.navigate(['/map/ping', this.ad.id], {
+      animated: true,
+      transition: {
+        name: 'slide',
+        duration: 200,
+        curve: 'ease',
+      }
+    })
+  }
+
   onNavigatedTo(data: NavigatedData) {
     if (data.isBackNavigation) {
       this.subscriptions.push(this.homeService

@@ -9,14 +9,12 @@
             <StackLayout>
                 <Label [text]="ad?.name"></Label>
                 <Label [text]="ad?.age"></Label>
-                <ng-container *ngFor="let loc of ad?.localizations">
-                    <Label [text]="loc.x + ' ' + loc.y"></Label>
-                </ng-container>
+                <Label [text]="ad?.description"></Label>
             </StackLayout>
         </StackLayout>
     </ScrollView>
     <FlexboxLayout class="flex-btn-container">
-        <Button *ngIf='owner !== true' class="ping-button" text="Ping"></Button>
+        <Button *ngIf='owner !== true' class="ping-button" text="Ping" (tap)="onPingTap()"></Button>
         <Button *ngIf='owner === true' class="edit-button" text="Edit" (tap)="onEditTap()"></Button>
     </FlexboxLayout>
 </FlexboxLayout>

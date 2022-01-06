@@ -4,11 +4,5 @@ export interface Ad {
     name: string,
     age: number,
     image: string,
-    description: string,
-    localizations: Array<Loc>
-}
-
-interface Loc {
-    x: number,
-    y: number
+    description: string
 }

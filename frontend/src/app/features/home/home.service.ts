@@ -1,3 +1,4 @@
+import { RouterExtensions } from '@nativescript/angular';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -10,18 +11,26 @@ import { Ad } from './ads.model';
 export class HomeService {
   //private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
   private serverUrl = "http://10.0.2.2:5000/";
+  private dist = 0.05;
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private routerExtensions: RouterExtensions) { }
 
-  getAdsList(): Observable<Ad[]> {
-    return (this.http.get(this.serverUrl + "ads/getAdsList") as Observable<Ad[]>);
+  getAdsList(lat, lon): Observable<Ad[]> {
+    let params = new HttpParams()
+      .set('lat', lat)
+      .set('lon', lon)
+      .set('dist', this.dist);
+    return (this.http.get(this.serverUrl + "ads/getAdsList", { params }) as Observable<Ad[]>);
   }
 
   getAdByid(id: number): Observable<Ad[]> {
     return (this.http.get(this.serverUrl + "ads/getAd?id=" + id) as Observable<Ad[]>);
   }
 
-  createAd(name, age, image, description) {
+  createAd(name, age, image, description, lat, lon) {
     var bghttp = require('@nativescript/background-http');
     var session = bghttp.session('file-upload');
     var request = {
@@ -33,7 +42,9 @@ export class HomeService {
       { name: 'name', value: name },
       { name: 'age', value: age },
       { name: 'image', filename: image, mimeType: "image/jpeg" },
-      { name: 'description', value: description }];
+      { name: 'description', value: description },
+      { name: 'lat', value: lat},
+      { name: 'lon', value: lon}];
 
     var task = session.multipartUpload(params, request);
 
@@ -48,6 +59,7 @@ export class HomeService {
         okButtonText: "Great!",
         message: "Thank you!\nLet's find this pet!"
       });
+      this.routerExtensions.back();
     })
   }
 
@@ -58,7 +70,7 @@ export class HomeService {
 
   deleteAd(id) {
     let params = new HttpParams().set('id', id);
-    return this.http.delete(this.serverUrl + 'ads/deleteAd', {params: params});
+    return this.http.delete(this.serverUrl + 'ads/deleteAd', { params: params });
   }
 
 }

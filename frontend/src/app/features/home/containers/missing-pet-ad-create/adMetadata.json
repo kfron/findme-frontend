@@ -24,20 +24,6 @@
             ]
         },
         {
-            "name": "age",
-            "displayName": "Age",
-            "index": 1,
-            "editor": "Number",
-            "validators": [
-                {
-                    "name": "NonEmpty",
-                    "params": {
-                        "errorMessage": "Age cannot be empty."
-                    }
-                }
-            ]
-        },
-        {
             "name": "description",
             "displayName": "Tell us something about this pet",
             "index": 2,

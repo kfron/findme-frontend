@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { registerElement, RouterExtensions } from '@nativescript/angular';
 import { Color, CoreTypes, NavigatedData, Page } from '@nativescript/core';
-import { getCurrentLocation, Location } from '@nativescript/geolocation';
-import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, PositionEventData, Style } from 'nativescript-google-maps-sdk';
+import { watchLocation, getCurrentLocation } from '@nativescript/geolocation';
+import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, Style } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
+import { LocationService } from './../../../../shared/services/location.service';
 import { Finding } from './../../map.model';
 import { MapService } from './../../map.service';
 
@@ -20,16 +21,22 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 
   closestFindings: Array<Finding> = []
   mapView: MapView
-  currentLocation: Location
+  currentPosition: Position
 
   constructor(
     private mapService: MapService,
     private routerExtensions: RouterExtensions,
+    private locationService: LocationService,
     private page: Page) {
-      this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
-    }
+    this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
+  }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.locationService.position$.subscribe(
+        (val) => { this.currentPosition = val }
+      )
+    )
   }
 
   ngOnDestroy(): void {
@@ -40,15 +47,11 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
   }
 
   async onMapReady(event) {
-    this.currentLocation = await getCurrentLocation({
-      desiredAccuracy: CoreTypes.Accuracy.high,
-      maximumAge: 5000,
-      timeout: 20000
-    })
-
+    this.currentPosition = await this.locationService.getCurrentLocation();
+    
     this.mapView = event.object as MapView;
-    this.mapView.latitude = this.currentLocation.latitude;
-    this.mapView.longitude = this.currentLocation.longitude;
+    this.mapView.latitude = this.currentPosition.latitude;
+    this.mapView.longitude = this.currentPosition.longitude;
     this.mapView.zoom = 13;
     this.mapView.setStyle(<Style>JSON.parse(
       `[
@@ -61,15 +64,9 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
           ]
         }
       ]`));
-      
-    let marker = new Marker();
-    marker.position = Position.positionFromLatLng(this.currentLocation.latitude, this.currentLocation.longitude);
-    marker.title = `It's you!`;
-    marker.snippet = "You";
-    this.mapView.addMarker(marker);
 
     this.subscriptions.push(this.mapService
-      .getClosestTo(this.currentLocation.latitude, this.currentLocation.longitude, 0.05)
+      .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, 0.05)
       .subscribe((findings: any[]) => {
         findings.map(val => {
           val.found_at = new Date(val.found_at);
@@ -77,7 +74,11 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
         });
         this.closestFindings = findings;
         this.setupMarkers();
-      }))
+      })
+    )
+
+    this.mapView.myLocationEnabled = true;
+    let settings = this.mapView.settings;
   }
 
   onMarkerSelect(event: MarkerEventData) {
@@ -116,9 +117,9 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
     let result = '';
     result += weeks === 1 ? ' week ' : weeks > 1 ? ' weeks ' : ''
     result += days === 1 ? days + ' day ' : days > 1 ? days + ' days ' : ''
-    //if (weeks > 0 ) return result + 'ago'
+    if (weeks > 0) return result + 'ago'
     result += hours === 1 ? hours + ' hour ' : hours > 1 ? hours + ' hours ' : ''
-    //if (days > 0 ) return result + 'ago'
+    if (days > 0) return result + 'ago'
     result += minutes === 1 ? minutes + ' minute ' : minutes > 1 ? minutes + ' minutes ' : ''
     return result + 'ago'
   }
@@ -141,8 +142,8 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
           polyline.addPoint(pos);
           let circle = new Circle();
           circle.center = pos;
-          circle.radius = 500;this.subscriptions.push(this.mapService
-            .getClosestTo(this.currentLocation.latitude, this.currentLocation.longitude, 0.05)
+          circle.radius = 500; this.subscriptions.push(this.mapService
+            .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, 0.05)
             .subscribe((findings: any[]) => {
               findings.map(val => {
                 val.found_at = new Date(val.found_at);
@@ -169,7 +170,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
   }
 
   onInfoWindowTapped(event: MarkerEventData) {
-    if(event.marker.userData?.id) {
+    if (event.marker.userData?.id) {
       this.routerExtensions.navigate(['/home/ad-details', event.marker.userData.ad_id], {
         animated: true,
         transition: {
@@ -186,7 +187,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
       this.mapView.removeAllMarkers();
       this.mapView.removeAllShapes();
       this.subscriptions.push(this.mapService
-        .getClosestTo(this.currentLocation.latitude, this.currentLocation.longitude, 0.05)
+        .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, 0.05)
         .subscribe((findings: any[]) => {
           findings.map(val => {
             val.found_at = new Date(val.found_at);

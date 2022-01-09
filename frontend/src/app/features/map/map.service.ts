@@ -16,16 +16,16 @@ export class MapService {
             .set('lat', lat)
             .set('lon', lon)
             .set('dist', dist);
-        return (this.http.get(this.serverUrl + 'map/getClosestTo', { params: params }) as Observable<any[]>);
+        return (this.http.get(this.serverUrl + 'map/getClosestTo', { params }) as Observable<any[]>);
     }
 
     getPath(startId: number): Observable<any[]> {
         let params = new HttpParams()
             .set('startId', startId);
-        return (this.http.get(this.serverUrl + 'map/getPath', { params: params }) as Observable<any[]>);
+        return (this.http.get(this.serverUrl + 'map/getPath', { params }) as Observable<any[]>);
     }
 
     createFinding(adId: number, lat: number, lon: number) {
-        return (this.http.post(this.serverUrl + 'map/createFinding', {adId, lat, lon}));
+        return (this.http.post(this.serverUrl + 'map/createFinding', { adId, lat, lon }));
     }
 }

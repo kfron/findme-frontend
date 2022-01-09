@@ -1,1 +1,17 @@
 /* Add mobile styles for the component here.  */
+
+.flexbox-container {
+    flex-direction: column;
+}
+
+.form {
+    flex-grow: 2;
+}
+
+.scroll-view {
+    height: 90%;
+}
+
+.commit-btn {
+    margin: 0;
+}

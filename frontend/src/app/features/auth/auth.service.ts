@@ -7,7 +7,8 @@ import { User } from './auth.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
+  //private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
+  private serverUrl = "http://10.0.2.2:5000/";
 
   public currentUser: User;
 

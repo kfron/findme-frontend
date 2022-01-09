@@ -1,0 +1,25 @@
+import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({
+  name: 'timeSinceDate'
+})
+export class TimeSinceDatePipe implements PipeTransform {
+
+  transform(foundAt: Date, ...args: unknown[]): string {
+    let now = Date.now();
+    let diff = Math.abs(now.valueOf() - foundAt.valueOf());
+    let weeks = Math.floor(diff / 604800000);
+    let days = Math.floor((diff - weeks * 604800000) / 86400000);
+    let hours = Math.floor((diff - weeks * 604800000 - days * 86400000) / 3600000);
+    let minutes = Math.floor((diff - weeks * 604800000 - days * 86400000 - hours * 3600000) / 60000);
+    let result = '';
+    result += weeks === 1 ? ' week ' : weeks > 1 ? ' weeks ' : ''
+    result += days === 1 ? days + ' day ' : days > 1 ? days + ' days ' : ''
+    if (weeks > 0) return result + 'ago'
+    result += hours === 1 ? hours + ' hour ' : hours > 1 ? hours + ' hours ' : ''
+    if (days > 0) return result + 'ago'
+    result += minutes === 1 ? minutes + ' minute ' : minutes > 1 ? minutes + ' minutes ' : ''
+    return result + 'ago'
+  }
+
+}

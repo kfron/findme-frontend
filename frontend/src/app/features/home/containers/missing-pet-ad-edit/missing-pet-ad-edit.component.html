@@ -1,4 +1,6 @@
-<FlexboxLayout class="flex-container">
+<ActivityIndicator [busy]="isBusy"></ActivityIndicator>
+
+<FlexboxLayout *ngIf="!isBusy" class="flex-container">
     <ActionBar [title]="ad?.name">
         <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
     </ActionBar>

@@ -27,6 +27,7 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
   ad: Ad;
   id: Number;
   url = '';
+  isBusy = false;
 
   context: ImagePicker = new ImagePicker({ mode: "single" })
 

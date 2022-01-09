@@ -1,8 +1,11 @@
+import { LocationService } from './../../../../shared/services/location.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
-import { NavigatedData, ObservableArray, Page } from '@nativescript/core';
+import { NavigatedData, ObservableArray, Page, CoreTypes } from '@nativescript/core';
+import { getCurrentLocation, watchLocation } from '@nativescript/geolocation';
+import { Position } from 'nativescript-google-maps-sdk';
 import { ListViewEventData } from 'nativescript-ui-listview';
-import { Subscription } from 'rxjs';
+import { concatMap, delay, of, Subscription, switchMap } from 'rxjs';
 import { Ad } from '../../ads.model';
 import { HomeService } from './../../home.service';
 
@@ -15,22 +18,47 @@ import { HomeService } from './../../home.service';
 export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = []
+  currentPosition: Position
 
   ads: ObservableArray<Ad> = new ObservableArray<Ad>([])
+  isBusy = false;
+  sortByProximity = false;
+  sortByProximityAsc = true;
+  sortByAge = false;
+  sortByAgeAsc = true;
+  sortByDate = false;
+  sortByDateAsc = true;
 
   constructor(
-    private homeService: HomeService, 
+    private homeService: HomeService,
     private routerExtensions: RouterExtensions,
+    private locationService: LocationService,
     private page: Page) {
-      this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
-    }
+    this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
+  }
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    this.currentPosition = await this.locationService.getCurrentLocation();
+
+    this.subscriptions.push(
+      this.locationService.position$.subscribe(
+        (val) => { this.currentPosition = val }
+      )
+    )
+    this.isBusy = true;
     this.subscriptions.push(this.homeService
-      .getAdsList()
-      .subscribe((ads: Ad[]) => {
-        this.ads = new ObservableArray(ads)
-      }))
+      .getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
+      .subscribe((ads: any[]) => {
+        ads.map(val => {
+          val.found_at = new Date(val.found_at);
+          val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon)
+          val.lat = undefined
+          val.lon = undefined
+        })
+        this.ads = new ObservableArray(ads as Ad[])
+        this.isBusy = false;
+      })
+    )
   }
 
   ngOnDestroy(): void {
@@ -58,16 +86,80 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
   onNavigatedTo(data: NavigatedData) {
     if (data.isBackNavigation) {
+      this.isBusy = true;
       this.subscriptions.push(this.homeService
-        .getAdsList()
-        .subscribe((ads: Ad[]) => {
-          this.ads = new ObservableArray(ads)
+        .getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
+        .subscribe((ads: any[]) => {
+          ads.map(val => {
+            val.found_at = new Date(val.found_at);
+            val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon)
+            val.lat = undefined
+            val.lon = undefined
+          })
+          this.ads = new ObservableArray(ads as Ad[])
+          this.isBusy = false;
         }))
     }
   }
 
   onMapButtonTap() {
     this.routerExtensions.navigateByUrl('/map')
+  }
+
+  onSortByDateTap() {
+    if (this.sortByDate)
+      this.sortByDateAsc = !this.sortByDateAsc;
+    this.sortByDate = true;
+    this.sortByAge = false;
+    this.sortByAgeAsc = true;
+    this.sortByProximity = false;
+    this.sortByProximityAsc = true;
+    this.ads = new ObservableArray<Ad>(
+      this.ads.sort((a, b) =>
+        this.sortByDateAsc ?
+          b.found_at.valueOf() - a.found_at.valueOf() :
+          a.found_at.valueOf() - b.found_at.valueOf())
+    );
+
+  }
+
+  onSortByProximityTap() {
+    if (this.sortByProximity)
+      this.sortByProximityAsc = !this.sortByProximityAsc;
+    this.sortByProximity = true;
+    this.sortByAge = false;
+    this.sortByAgeAsc = true;
+    this.sortByDate = false;
+    this.sortByDateAsc = true;
+    this.ads = new ObservableArray<Ad>(
+      this.ads.sort((a, b) =>
+        this.sortByProximityAsc ?
+          this.getDistance(a.lastKnownPosition, this.currentPosition) - this.getDistance(b.lastKnownPosition, this.currentPosition) :
+          this.getDistance(b.lastKnownPosition, this.currentPosition) - this.getDistance(a.lastKnownPosition, this.currentPosition))
+    );
+
+  }
+
+  getDistance(a: Position, b: Position): number {
+    let R = 6371.0710; // Radius of the Earth in miles
+    let rlat1 = a.latitude * (Math.PI / 180); // Convert degrees to radians
+    let rlat2 = b.latitude * (Math.PI / 180); // Convert degrees to radians
+    let difflat = rlat2 - rlat1; // Radian difference (latitudes)
+    let difflon = (b.longitude - a.longitude) * (Math.PI / 180); // Radian difference (longitudes)
+
+    let d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
+    return Math.round(d * 1000);
+  }
+
+  onSortByAgeTap() {
+    if (this.sortByAge)
+      this.sortByAgeAsc = !this.sortByAgeAsc;
+    this.sortByAge = true;
+    this.sortByDate = false;
+    this.sortByDateAsc = true;
+    this.sortByProximity = false;
+    this.sortByProximityAsc = true;
+    this.ads = new ObservableArray<Ad>(this.ads.sort((a, b) => this.sortByAgeAsc ? a.age - b.age : b.age - a.age));
   }
 
 }

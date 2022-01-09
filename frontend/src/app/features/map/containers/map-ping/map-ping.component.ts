@@ -67,7 +67,8 @@ export class MapPingComponent implements OnInit, OnDestroy {
         }
       ]`)
     );
-
+    
+    this.mapView.myLocationEnabled = true;
 
   }
 

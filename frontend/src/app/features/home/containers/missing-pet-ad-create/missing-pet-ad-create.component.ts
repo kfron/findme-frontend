@@ -1,17 +1,20 @@
+import { LocationService } from './../../../../shared/services/location.service';
+import { Position } from 'nativescript-google-maps-sdk';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { registerElement } from '@nativescript/angular';
 import { AndroidApplication } from '@nativescript/core';
 import { ImagePicker } from '@nativescript/imagepicker';
-import { PropertyValidator } from 'nativescript-ui-dataform';
 import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { AuthService } from './../../../auth/auth.service';
 import { Ad } from './../../ads.model';
 import { HomeService } from './../../home.service';
 import { ButtonEditorHelper } from './buttonEditorHelper';
+import { AgeValidator, EmptyValidator } from './validators';
 
 const metadata = require('./adMetadata.json');
 
 registerElement("EmptyValidator", () => <any>EmptyValidator);
+registerElement("AgeValidator", () => <any>AgeValidator);
 
 @Component({
   moduleId: module.id,
@@ -25,21 +28,32 @@ export class MissingPetAdCreateComponent implements OnInit {
   user = this.authService.currentUser;
   ad: Ad;
   url = '';
+  pos: Position
 
   context: ImagePicker = new ImagePicker({ mode: "single" })
 
-  constructor(private authService: AuthService, private homeService: HomeService,) { }
+  constructor(
+    private authService: AuthService, 
+    private homeService: HomeService,
+    private locationService: LocationService) { }
 
   @ViewChild('adCreateDataForm', { static: false }) adCreateDataForm: RadDataFormComponent;
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.ad = { name: '', age: null, image: '', description: '' } as Ad;
+    this.pos = await this.locationService.getCurrentLocation();
   }
 
   async validateAndCommit() {
     let isValid = await this.adCreateDataForm.dataForm.validateAndCommitAll();
     if (isValid) {
-      this.homeService.createAd(this.ad.name, this.ad.age, this.ad.image, this.ad.description);
+      this.homeService.createAd(
+        this.ad.name,
+        this.ad.age,
+        this.ad.image,
+        this.ad.description,
+        this.pos.latitude,
+        this.pos.longitude);
     }
   }
 
@@ -94,18 +108,5 @@ export class MissingPetAdCreateComponent implements OnInit {
       .catch(err => {
         console.log(err);
       })
-  }
-}
-
-
-
-export class EmptyValidator extends PropertyValidator {
-  constructor() {
-    super();
-    this.errorMessage = "Choose an image.";
-  }
-
-  public validate(value: any, propertyName: string): boolean {
-    return value !== '';
   }
 }

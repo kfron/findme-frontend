@@ -16,7 +16,8 @@ import { NavigatedData, Page } from '@nativescript/core';
 export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = []
-  owner = false
+  owner = false;
+  isBusy = false;
 
   constructor(
     private authService: AuthService,
@@ -32,11 +33,13 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const id = +this.activatedRoute.snapshot.params.id
     if (id) {
+      this.isBusy = true;
       this.subscriptions.push(this.homeService
         .getAdByid(id)
         .subscribe((ad: Ad[]) => {
           this.ad = ad[0];
           this.owner = this.authService.currentUser.id === this.ad.user_id;
+          this.isBusy = false;
         }));
     }
   }
@@ -76,11 +79,13 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 
   onNavigatedTo(data: NavigatedData) {
     if (data.isBackNavigation) {
+      this.isBusy = true;
       this.subscriptions.push(this.homeService
         .getAdByid(this.ad.id)
         .subscribe((ad: Ad[]) => {
           this.ad = ad[0];
           this.owner = this.authService.currentUser.id === this.ad.user_id;
+          this.isBusy = false;
         }));
     }
   }

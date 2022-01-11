@@ -10,11 +10,29 @@
 }
 
 .ads-list {
-    height: 80%;
+    flex-grow: 2;
 }
 
-.flex-btn-container {
-    justify-content: center;
+.stack-top-container {
+    Button {
+        margin: 0;
+    }
+}
+
+.flex-top-btn-container {
+    Button {
+        margin: 0;
+        flex-grow: 1;
+    }
+}
+
+.flex-bot-btn-container {
+    min-height: 10%;
+    height: 10%;
+    Button {
+        margin: 0;
+        flex-grow: 1;
+    }
 }
 
 .test-button {
@@ -25,4 +43,12 @@
 .sort-btn {
     margin: 0;
     flex-grow: 1;
+}
+
+.empty-label-container {
+    justify-content: center;
+    .empty-label {
+        font-size: large;
+        margin-top: 60%;
+    }
 }

@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { registerElement, RouterExtensions } from '@nativescript/angular';
-import { Color, CoreTypes, NavigatedData, Page } from '@nativescript/core';
-import { watchLocation, getCurrentLocation } from '@nativescript/geolocation';
+import { Color, NavigatedData, Page } from '@nativescript/core';
 import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, Style } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
 import { LocationService } from './../../../../shared/services/location.service';
@@ -22,6 +21,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
   closestFindings: Array<Finding> = []
   mapView: MapView
   currentPosition: Position
+  toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`
 
   constructor(
     private mapService: MapService,
@@ -41,14 +41,14 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     while (this.subscriptions.length != 0) {
-      var sub = this.subscriptions.pop();
+      let sub = this.subscriptions.pop();
       sub.unsubscribe();
     }
   }
 
   async onMapReady(event) {
     this.currentPosition = await this.locationService.getCurrentLocation();
-    
+
     this.mapView = event.object as MapView;
     this.mapView.latitude = this.currentPosition.latitude;
     this.mapView.longitude = this.currentPosition.longitude;
@@ -66,19 +66,20 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
       ]`));
 
     this.subscriptions.push(this.mapService
-      .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, 0.05)
+      .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
       .subscribe((findings: any[]) => {
         findings.map(val => {
           val.found_at = new Date(val.found_at);
           val.position = Position.positionFromLatLng(val.lat, val.lon);
         });
         this.closestFindings = findings;
-        this.setupMarkers();
+        this.setupAdMarkers();
       })
     )
 
+    this.setupSearchCircle()
+
     this.mapView.myLocationEnabled = true;
-    let settings = this.mapView.settings;
   }
 
   onMarkerSelect(event: MarkerEventData) {
@@ -88,7 +89,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
     }
   }
 
-  setupMarkers() {
+  setupAdMarkers() {
     for (let i = 0; i < this.closestFindings.length; i++) {
       let marker = new Marker();
       let find = this.closestFindings[i];
@@ -105,6 +106,17 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
       marker.snippet = this.formatTimeSnippet(find.found_at);
       this.mapView.addMarker(marker);
     }
+  }
+
+  setupSearchCircle() {
+    let circle = new Circle();
+    circle.center = this.currentPosition;
+    circle.radius = this.mapService.searchRadius * 1000;
+    circle.visible = true;
+    circle.fillColor = new Color(15, 85, 209, 250);
+    circle.strokeColor = new Color('#559cfa');
+    circle.strokeWidth = 2;
+    this.mapView.addCircle(circle);
   }
 
   formatTimeSnippet(foundAt: Date) {
@@ -132,6 +144,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
           val.position = Position.positionFromLatLng(val.lat, val.lon);
         });
         this.mapView.removeAllShapes();
+        this.setupSearchCircle()
         let path = []
         findings.forEach(find => {
           path.push(find.position)
@@ -142,16 +155,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
           polyline.addPoint(pos);
           let circle = new Circle();
           circle.center = pos;
-          circle.radius = 500; this.subscriptions.push(this.mapService
-            .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, 0.05)
-            .subscribe((findings: any[]) => {
-              findings.map(val => {
-                val.found_at = new Date(val.found_at);
-                val.position = Position.positionFromLatLng(val.lat, val.lon);
-              });
-              this.closestFindings = findings;
-              this.setupMarkers();
-            }))
+          circle.radius = 500;
           circle.visible = true;
           circle.fillColor = new Color(30, 106, 212, 68);
           circle.strokeColor = new Color('#2b6616');
@@ -186,16 +190,36 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
     if (data.isBackNavigation) {
       this.mapView.removeAllMarkers();
       this.mapView.removeAllShapes();
+      this.setupSearchCircle()
       this.subscriptions.push(this.mapService
-        .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, 0.05)
+        .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
         .subscribe((findings: any[]) => {
           findings.map(val => {
             val.found_at = new Date(val.found_at);
             val.position = Position.positionFromLatLng(val.lat, val.lon);
           });
           this.closestFindings = findings;
-          this.setupMarkers();
+          this.setupAdMarkers();
         }))
     }
+  }
+
+  onToggleRadiusTapped(data) {
+    this.mapService.toggleSearchRadius();
+    this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`
+    
+    this.mapView.removeAllMarkers();
+    this.mapView.removeAllShapes();
+    this.subscriptions.push(this.mapService
+      .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
+      .subscribe((findings: any[]) => {
+        findings.map(val => {
+          val.found_at = new Date(val.found_at);
+          val.position = Position.positionFromLatLng(val.lat, val.lon);
+        });
+        this.closestFindings = findings;
+        this.setupAdMarkers();
+      }))
+    this.setupSearchCircle()
   }
 }

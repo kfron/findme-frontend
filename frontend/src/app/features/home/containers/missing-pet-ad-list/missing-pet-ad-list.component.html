@@ -1,13 +1,19 @@
 <ActivityIndicator [busy]="isBusy"></ActivityIndicator>
 
 <FlexboxLayout *ngIf="!isBusy" class="flex-container">
-    <FlexboxLayout>
-        <Button class="sort-btn" [color]="sortByDate ? (sortByDateAsc ? 'green' : 'red') : ''" text="Sort by date"
-            (tap)="onSortByDateTap()"></Button>
-        <Button class="sort-btn" [color]="sortByProximity ? (sortByProximityAsc ? 'green' : 'red') : ''" text="Sort by proximity"
-            (tap)="onSortByProximityTap()"></Button>
-        <Button class="sort-btn" [color]="sortByAge ? (sortByAgeAsc ? 'green' : 'red') : ''" text="Sort by age"
-            (tap)="onSortByAgeTap()"></Button>
+    <StackLayout class="stack-top-container">
+        <FlexboxLayout class="flex-top-btn-container">
+            <Button class="sort-btn" [color]="sortByDate ? (sortByDateAsc ? 'green' : 'red') : ''" text="Sort by date"
+                (tap)="onSortByDateTap()"></Button>
+            <Button class="sort-btn" [color]="sortByProximity ? (sortByProximityAsc ? 'green' : 'red') : ''"
+                text="Sort by proximity" (tap)="onSortByProximityTap()"></Button>
+            <Button class="sort-btn" [color]="sortByAge ? (sortByAgeAsc ? 'green' : 'red') : ''" text="Sort by age"
+                (tap)="onSortByAgeTap()"></Button>
+        </FlexboxLayout>
+        <Button class="toggle-radius-btn" [text]="toggleRadiusText" (tap)="onToggleRadiusTapped()"></Button>
+    </StackLayout>
+    <FlexboxLayout class="empty-label-container">
+        <Label class="empty-label" *ngIf="ads.length === 0" [text]="emptyText"></Label>
     </FlexboxLayout>
     <RadListView [items]="ads" (itemTap)="onAdItemTap($event)" class="ads-list">
         <ng-template tkListItemTemplate let-ad="item">
@@ -25,7 +31,7 @@
             </StackLayout>
         </ng-template>
     </RadListView>
-    <FlexboxLayout class="flex-btn-container">
+    <FlexboxLayout class="flex-bot-btn-container">
         <Button class="test-button" text="Map" (tap)="onMapButtonTap()"></Button>
         <Button class="test-button" text="Add" (tap)="createNewAd()"></Button>
     </FlexboxLayout>

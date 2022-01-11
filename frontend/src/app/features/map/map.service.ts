@@ -5,11 +5,25 @@ import { AuthService } from './../auth/auth.service';
 @Injectable({
     providedIn: 'root'
 })
-export class MapService {
-    //private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
-    private serverUrl = "http://10.0.2.2:5000/";
 
+export class MapService {
+    private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
+    //private serverUrl = "http://10.0.2.2:5000/";
+
+    private _searchRadiuses = [0.5, 1, 5];
+    private _searchRadiusIndex = 0;
+    private _searchRadius = this._searchRadiuses[this._searchRadiusIndex]
+
+    
     constructor(private http: HttpClient, private authService: AuthService) { }
+    
+    get searchRadius() {
+        return this._searchRadiuses[this._searchRadiusIndex]
+    }
+
+    toggleSearchRadius() {
+        this._searchRadiusIndex = (this._searchRadiusIndex + 1) % 3;
+    }
 
     getClosestTo(lat: number, lon: number, dist: number): Observable<any[]> {
         let params = new HttpParams()

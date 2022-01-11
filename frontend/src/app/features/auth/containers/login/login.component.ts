@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.email = "test";
     this.password = "test";
     this.login();
+
   }
 
   ngOnDestroy(): void {

@@ -1,5 +1,8 @@
-<MapView 
-    (mapReady)="onMapReady($event)" 
-    (markerSelect)="onMarkerSelect($event)"
-    (markerInfoWindowTapped)="onInfoWindowTapped($event)">
-</MapView>
+<FlexboxLayout class="flexbox-container">
+    <StackLayout class="map-view-container">
+        <MapView (mapReady)="onMapReady($event)" (markerSelect)="onMarkerSelect($event)"
+            (markerInfoWindowTapped)="onInfoWindowTapped($event)">
+        </MapView>
+    </StackLayout>
+    <Button class="submit-btn" [text]="toggleRadiusText" (tap)="onToggleRadiusTapped($event)"></Button>
+</FlexboxLayout>

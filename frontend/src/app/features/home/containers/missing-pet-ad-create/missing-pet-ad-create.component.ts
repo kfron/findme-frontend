@@ -1,17 +1,17 @@
-import { LocationService } from './../../../../shared/services/location.service';
-import { Position } from 'nativescript-google-maps-sdk';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { registerElement } from '@nativescript/angular';
+import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { ModalDialogOptions, ModalDialogService, registerElement } from '@nativescript/angular';
 import { AndroidApplication } from '@nativescript/core';
 import { ImagePicker } from '@nativescript/imagepicker';
 import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
+import { LocationService } from './../../../../shared/services/location.service';
 import { AuthService } from './../../../auth/auth.service';
-import { Ad } from './../../ads.model';
+import { MapModelRootComponent } from './../../components/map-model-root/map-model-root.component';
 import { HomeService } from './../../home.service';
-import { ButtonEditorHelper } from './buttonEditorHelper';
+import { ImageButtonEditorHelper, PositionButtonEditorHelper } from './buttonEditorHelpers';
 import { AgeValidator, EmptyValidator } from './validators';
 
 const metadata = require('./adMetadata.json');
+
 
 registerElement("EmptyValidator", () => <any>EmptyValidator);
 registerElement("AgeValidator", () => <any>AgeValidator);
@@ -24,24 +24,31 @@ registerElement("AgeValidator", () => <any>AgeValidator);
 })
 export class MissingPetAdCreateComponent implements OnInit {
   adMetadata = JSON.parse(JSON.stringify(metadata));
-  buttonEditorHelper: ButtonEditorHelper;
+  private imageButtonEditorHelper: ImageButtonEditorHelper;
+  private positionButtonEditorHelper: PositionButtonEditorHelper;
   user = this.authService.currentUser;
-  ad: Ad;
+  ad;
   url = '';
-  pos: Position
 
   context: ImagePicker = new ImagePicker({ mode: "single" })
 
+  options: ModalDialogOptions = {
+    viewContainerRef: this.vcRef,
+    context: {},
+    fullscreen: true
+  };
+
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private homeService: HomeService,
-    private locationService: LocationService) { }
+    private locationService: LocationService,
+    private modalService: ModalDialogService,
+    private vcRef: ViewContainerRef) { }
 
   @ViewChild('adCreateDataForm', { static: false }) adCreateDataForm: RadDataFormComponent;
 
-  async ngOnInit() {
-    this.ad = { name: '', age: null, image: '', description: '' } as Ad;
-    this.pos = await this.locationService.getCurrentLocation();
+  ngOnInit() {
+    this.ad = { name: '', age: null, description: '', image: '', lastKnownPosition: '0 0' };
   }
 
   async validateAndCommit() {
@@ -52,37 +59,76 @@ export class MissingPetAdCreateComponent implements OnInit {
         this.ad.age,
         this.ad.image,
         this.ad.description,
-        this.pos.latitude,
-        this.pos.longitude);
+        this.ad.lastKnownPosition);
+    } else {
     }
   }
 
-  editorNeedsView(args) {
+  positionEditorNeedsView(args) {
     if (AndroidApplication) {
-      this.buttonEditorHelper = new ButtonEditorHelper();
-      this.buttonEditorHelper.editor = args.object;
+      this.positionButtonEditorHelper = new PositionButtonEditorHelper();
+      this.positionButtonEditorHelper.editor = args.object;
       const androidEditorView: android.widget.Button = new android.widget.Button(args.context);
       const that = this;
       androidEditorView.setOnClickListener(new android.view.View.OnClickListener({
         onClick(view: android.view.View) {
-          that.handleTap(view, args.object);
+          that.positionHandleTap(view, args.object);
         }
       }));
       args.view = androidEditorView;
-      this.updateEditorValue(androidEditorView, this.ad.image);
+      this.positionUpdateEditorValue(androidEditorView, this.ad.lastKnownPosition);
     }
   }
 
-  editorHasToApplyValue(args) {
-    this.buttonEditorHelper.updateEditorValue(args.view, args.value);
+  positionEditorHasToApplyValue(args) {
+    this.positionButtonEditorHelper.updateEditorValue(args.view, args.value);
   }
 
-  editorNeedsValue(args) {
-    args.value = this.buttonEditorHelper.buttonValue;
+  positionEditorNeedsValue(args) {
+    args.value = this.positionButtonEditorHelper.buttonValue;
   }
 
-  updateEditorValue(editorView, value) {
-    this.buttonEditorHelper.buttonValue = value;
+  positionUpdateEditorValue(editorView, value) {
+    this.positionButtonEditorHelper.buttonValue = value;
+    if (value === '0 0')
+      editorView.setText("(tap to choose)");
+    else
+      editorView.setText(value);
+  }
+
+  async positionHandleTap(editorView, editor) {
+    let result = await this.modalService.showModal(MapModelRootComponent, this.options);
+    this.ad.lastKnownPosition = result.latitude + ' ' + result.longitude
+    this.positionUpdateEditorValue(editorView, this.ad.lastKnownPosition);
+    editor.notifyValueChanged();
+  }
+
+  imageEditorNeedsView(args) {
+    if (AndroidApplication) {
+      this.imageButtonEditorHelper = new ImageButtonEditorHelper();
+      this.imageButtonEditorHelper.editor = args.object;
+      const androidEditorView: android.widget.Button = new android.widget.Button(args.context);
+      const that = this;
+      androidEditorView.setOnClickListener(new android.view.View.OnClickListener({
+        onClick(view: android.view.View) {
+          that.imageHandleTap(view, args.object);
+        }
+      }));
+      args.view = androidEditorView;
+      this.imageUpdateEditorValue(androidEditorView, this.ad.image);
+    }
+  }
+
+  imageEditorHasToApplyValue(args) {
+    this.imageButtonEditorHelper.updateEditorValue(args.view, args.value);
+  }
+
+  imageEditorNeedsValue(args) {
+    args.value = this.imageButtonEditorHelper.buttonValue;
+  }
+
+  imageUpdateEditorValue(editorView, value) {
+    this.imageButtonEditorHelper.buttonValue = value;
     let splitUrl = this.url.split('/');
     let imageName = splitUrl[splitUrl.length - 1];
     if (value === '')
@@ -91,7 +137,7 @@ export class MissingPetAdCreateComponent implements OnInit {
       editorView.setText(imageName + "\n (tap to change)");
   }
 
-  handleTap(editorView, editor) {
+  imageHandleTap(editorView, editor) {
 
     this.context
       .authorize()
@@ -101,7 +147,7 @@ export class MissingPetAdCreateComponent implements OnInit {
       .then(selection => {
         selection.forEach(selected => {
           this.url = selected.android;
-          this.updateEditorValue(editorView, this.url);
+          this.imageUpdateEditorValue(editorView, this.url);
           editor.notifyValueChanged();
         })
       })

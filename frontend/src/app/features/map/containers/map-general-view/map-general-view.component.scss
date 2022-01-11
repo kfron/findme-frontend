@@ -1,1 +1,9 @@
 /* Add mobile styles for the component here.  */
+.flexbox-container {
+    flex-direction: column;
+}
+
+.submit-btn {
+    height: 20%;
+    margin: 0;
+}

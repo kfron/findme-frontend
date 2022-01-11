@@ -1,3 +1,4 @@
+import { MapService } from './../../../map/map.service';
 import { LocationService } from './../../../../shared/services/location.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
@@ -28,12 +29,15 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
   sortByAgeAsc = true;
   sortByDate = false;
   sortByDateAsc = true;
+  toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`
+  emptyText = `No ads in ${this.mapService.searchRadius} km radius`
 
   constructor(
     private homeService: HomeService,
     private routerExtensions: RouterExtensions,
     private locationService: LocationService,
-    private page: Page) {
+    private page: Page,
+    private mapService: MapService) {
     this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
   }
 
@@ -86,6 +90,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
   onNavigatedTo(data: NavigatedData) {
     if (data.isBackNavigation) {
+      this.emptyText = `No ads in ${this.mapService.searchRadius} km radius`
+      this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`;
       this.isBusy = true;
       this.subscriptions.push(this.homeService
         .getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
@@ -160,6 +166,25 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
     this.sortByProximity = false;
     this.sortByProximityAsc = true;
     this.ads = new ObservableArray<Ad>(this.ads.sort((a, b) => this.sortByAgeAsc ? a.age - b.age : b.age - a.age));
+  }
+
+  onToggleRadiusTapped() {
+    this.mapService.toggleSearchRadius();
+    this.emptyText = `No ads in ${this.mapService.searchRadius} km radius`
+    this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`;
+    this.isBusy = true;
+    this.subscriptions.push(this.homeService
+      .getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
+      .subscribe((ads: any[]) => {
+        ads.map(val => {
+          val.found_at = new Date(val.found_at);
+          val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon)
+          val.lat = undefined
+          val.lon = undefined
+        })
+        this.ads = new ObservableArray(ads as Ad[])
+        this.isBusy = false;
+      }))
   }
 
 }

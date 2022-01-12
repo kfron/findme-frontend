@@ -1,69 +1,74 @@
-import { Subscription } from 'rxjs';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../../auth.service';
 import { User } from './../../auth.model';
 
 @Component({
-  moduleId: module.id,
-  selector: 'fm-singup',
-  templateUrl: './singup.component.html',
-  styleUrls: ['./singup.component.scss']
+	moduleId: module.id,
+	selector: 'fm-singup',
+	templateUrl: './singup.component.html',
+	styleUrls: ['./singup.component.scss']
 })
-export class SingupComponent implements OnInit, OnDestroy {
-  private subscription: Subscription;
-  email = "";
-  password = "";
-  confirmPassword = "";
+export class SingupComponent implements OnDestroy {
+	private subscriptions: Subscription[] = [];
+	private timeouts: NodeJS.Timeout[] = []
 
-  constructor(private authService: AuthService, private routerExtensions: RouterExtensions) { }
+	email = '';
+	password = '';
+	confirmPassword = '';
 
-  ngOnInit(): void { }
+	constructor(private authService: AuthService, private routerExtensions: RouterExtensions) { }
 
-  ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe()
-      this.subscription = null
-    }
-  }
+	ngOnDestroy(): void {
+		while (this.subscriptions.length != 0) {
+			const sub = this.subscriptions.pop();
+			sub.unsubscribe();
+		}
+		while (this.timeouts.length != 0) {
+			let timeout = this.timeouts.pop();
+			clearTimeout(timeout);
+			timeout = null;
+		}
+	}
 
-  signup(): void {
-    if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
-      this.subscription = this.authService.signup({email: this.email, password: this.password, is_admin: false} as User)
-        .subscribe({
-          next: (res) => {
-            this.authService.currentUser = res;
-            this.routerExtensions.navigate(['/home']);
-          },
-          error: (err) => {
-            console.log(err.error)
-            alert({
-              title: "Find Me",
-              okButtonText: "OK",
-              message: err.error.message
-            });
-            this.email = "";
-            this.password = "";
-            this.confirmPassword = "";
-          }
-        })
-    }
+	onSignupTap(): void {
+		if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
+			this.subscriptions.push(this.authService.signup({ email: this.email, password: this.password, is_admin: false } as User)
+				.subscribe({
+					next: (res) => {
+						this.authService.currentUser = res;
+						this.routerExtensions.navigate(['/home']);
+					},
+					error: (err) => {
+						console.log(err.error);
+						alert({
+							title: 'Find Me',
+							okButtonText: 'OK',
+							message: err.error.message
+						});
+						this.email = '';
+						this.password = '';
+						this.confirmPassword = '';
+					}
+				}));
+		}
 
-  }
+	}
 
-  onReturnPress(args) {
-    let textField = <TextField>args.object;
+	onReturnPress(args) {
+		const textField = <TextField>args.object;
 
-    setTimeout(() => {
-      textField.dismissSoftInput();
-    }, 100);
+		this.timeouts.push(setTimeout(() => {
+			textField.dismissSoftInput();
+		}, 100));
 
-    this[textField.className] = textField.text;
-  }
+		this[textField.className] = textField.text;
+	}
 
-  toggleForm() {
-    this.routerExtensions.navigate(['/auth'])
-  }
+	toggleForm() {
+		this.routerExtensions.navigate(['/auth']);
+	}
 
 }

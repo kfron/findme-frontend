@@ -6,12 +6,12 @@ import { LoginComponent } from './containers/login/login.component';
 
 
 const routes: Routes = [
-  { path: '', component: LoginComponent },
-  { path: 'signup', component: SingupComponent }
-]
+	{ path: '', component: LoginComponent },
+	{ path: 'signup', component: SingupComponent }
+];
 
 @NgModule({
-  imports: [NativeScriptRouterModule.forChild(routes)],
-  exports: [NativeScriptRouterModule],
+	imports: [NativeScriptRouterModule.forChild(routes)],
+	exports: [NativeScriptRouterModule],
 })
 export class AuthRoutingModule {}

@@ -3,6 +3,6 @@ import { platformNativeScript, runNativeScriptAngularApp } from '@nativescript/a
 import { AppModule } from './app/app.module';
 
 runNativeScriptAngularApp({
-  appModuleBootstrap: () => platformNativeScript().bootstrapModule(AppModule),
+	appModuleBootstrap: () => platformNativeScript().bootstrapModule(AppModule),
 });
 

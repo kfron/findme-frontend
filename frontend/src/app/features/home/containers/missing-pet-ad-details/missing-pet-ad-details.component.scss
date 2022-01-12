@@ -3,14 +3,18 @@
     flex-direction: column;
 }
 
-.flex-btn-container {
-    height: 20%;
-    Button {
-        margin: 0;
-        flex-grow: 1;
+.edit-button,
+.ping-button {
+    margin: 0;
+}
+.flex-btnss-container {
+    height: 10%;
+    .edit-button,
+    .ping-button {
+        width: 100%;
     }
 }
 
 .ad-details {
-    flex-grow: 2;
+    height: 90%;
 }

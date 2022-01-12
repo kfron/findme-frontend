@@ -1,4 +1,4 @@
-import { Position } from "nativescript-google-maps-sdk";
+import { Position } from 'nativescript-google-maps-sdk';
 
 export interface Ad {
     id: number,

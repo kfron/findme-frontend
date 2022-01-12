@@ -6,12 +6,12 @@ import { MapPingComponent } from './containers/map-ping/map-ping.component';
 
 
 const routes: Routes = [
-  { path: '', component: MapGeneralViewComponent },
-  { path: 'ping/:adId', component: MapPingComponent }
-]
+	{ path: '', component: MapGeneralViewComponent },
+	{ path: 'ping/:adId', component: MapPingComponent }
+];
 
 @NgModule({
-  imports: [NativeScriptRouterModule.forChild(routes)],
-  exports: [NativeScriptRouterModule],
+	imports: [NativeScriptRouterModule.forChild(routes)],
+	exports: [NativeScriptRouterModule],
 })
 export class MapRoutingModule { }

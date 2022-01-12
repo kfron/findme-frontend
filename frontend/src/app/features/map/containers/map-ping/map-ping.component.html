@@ -1,8 +1,8 @@
 <FlexboxLayout class="flexbox-container">
     <StackLayout class="map-view-container">
-        <MapView class="map-view" (mapReady)="onMapReady($event)" (markerSelect)="onMarkerSelect($event)"
+        <MapView class="map-view" (mapReady)="onMapReady($event)" (markerSelect)="onMarkerSelect()"
             (coordinateTapped)="onCoordinateTapped($event)" (markerDrag)="onMarkerDrag($event)">
         </MapView>
     </StackLayout>
-    <Button class="submit-btn" text="Submit finding" [isEnabled]="isEnabled" (tap)="onSubmitTapped($event)"></Button>
+    <Button class="submit-btn" text="Submit finding" [isEnabled]="isEnabled" (tap)="onSubmitTapped()"></Button>
 </FlexboxLayout>

@@ -6,13 +6,13 @@ import { LoginComponent } from './containers/login/login.component';
 import { SingupComponent } from './containers/singup/singup.component';
 
 const components = [
-  LoginComponent,
-  SingupComponent
-]
+	LoginComponent,
+	SingupComponent
+];
 
 @NgModule({
-  declarations: components,
-  imports: [AuthRoutingModule, NativeScriptCommonModule, NativeScriptLocalizeModule, NativeScriptHttpClientModule],
-  schemas: [NO_ERRORS_SCHEMA]
+	declarations: components,
+	imports: [AuthRoutingModule, NativeScriptCommonModule, NativeScriptLocalizeModule, NativeScriptHttpClientModule],
+	schemas: [NO_ERRORS_SCHEMA]
 })
 export class AuthModule { }

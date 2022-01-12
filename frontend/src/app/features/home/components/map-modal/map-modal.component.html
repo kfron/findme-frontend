@@ -1,11 +1,15 @@
+<ActionBar>
+    <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
+</ActionBar>
+
 <FlexboxLayout class="flexbox-container">
     <StackLayout class="map-view-container">
         <MapView class="map-view" 
             (mapReady)="onMapReady($event)" 
-            (markerSelect)="onMarkerSelect($event)"
-            (coordinateTapped)="onCoordinateTapped($event)" 
+            (markerSelect)="onMarkerSelect()"
+            (coordinateTapped)="onCoordinateTap($event)" 
             (markerDrag)="onMarkerDrag($event)">
         </MapView>
     </StackLayout>
-    <Button class="submit-btn" text="Submit finding" [isEnabled]="isEnabled" (tap)="onSubmitTapped($event)"></Button>
+    <Button class="submit-btn" text="Submit finding" [isEnabled]="isEnabled" (tap)="onSubmitTap()"></Button>
 </FlexboxLayout>

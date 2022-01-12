@@ -3,19 +3,19 @@ import { RouterExtensions } from '@nativescript/angular';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  moduleId: module.id,
-  selector: 'fm-map-model-root',
-  templateUrl: './map-model-root.component.html'
+	moduleId: module.id,
+	selector: 'fm-map-model-root',
+	templateUrl: './map-model-root.component.html'
 })
 export class MapModelRootComponent implements OnInit {
 
-  constructor(
+	constructor(
     private routerExtensions: RouterExtensions,
     private activatedRoute: ActivatedRoute
-  ) { }
+	) { }
 
-  ngOnInit(): void {
-    this.routerExtensions.navigate(['modal-view'], { relativeTo: this.activatedRoute });
-  }
+	ngOnInit(): void {
+		this.routerExtensions.navigate(['modal-view'], { relativeTo: this.activatedRoute });
+	}
 
 }

@@ -1,4 +1,23 @@
 /* Add mobile styles for the component here.  */
+
+.bottom-btns-container,
+.flex-container {
+    flex-direction: column;
+}
+
+.scroll-container {
+    height: 80%;
+}
+
+.bottom-btns-container {
+    height: 20%;
+}
+
 .delete-btn {
     color: red;
+}
+
+.delete-btn,
+.update-btn {
+    margin: 0;
 }

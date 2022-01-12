@@ -7,21 +7,21 @@ import { MapPingComponent } from './containers/map-ping/map-ping.component';
 import { MapRoutingModule } from './map-routing.module';
 
 const components = [
-  MapGeneralViewComponent,
-  MapPingComponent
-]
+	MapGeneralViewComponent,
+	MapPingComponent
+];
 
 const modules = [
-  MapRoutingModule,
-  NativeScriptCommonModule,
-  NativeScriptUIListViewModule,
-  NativeScriptLocalizeModule,
-  NativeScriptHttpClientModule
-]
+	MapRoutingModule,
+	NativeScriptCommonModule,
+	NativeScriptUIListViewModule,
+	NativeScriptLocalizeModule,
+	NativeScriptHttpClientModule
+];
 
 @NgModule({
-  declarations: components,
-  imports: modules,
-  schemas: [NO_ERRORS_SCHEMA]
+	declarations: components,
+	imports: modules,
+	schemas: [NO_ERRORS_SCHEMA]
 })
 export class MapModule { }

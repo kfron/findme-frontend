@@ -8,134 +8,134 @@ import { Subscription } from 'rxjs';
 import { AuthService } from './../../../auth/auth.service';
 import { Ad } from './../../ads.model';
 import { HomeService } from './../../home.service';
+import * as metadata from './adMetadata.json';
 import { ButtonEditorHelper } from './buttonEditorHelper';
 
-const metadata = require('./adMetadata.json');
 
 @Component({
-  moduleId: module.id,
-  selector: 'fm-missing-pet-ad-edit',
-  templateUrl: './missing-pet-ad-edit.component.html',
-  styleUrls: ['./missing-pet-ad-edit.component.scss']
+	moduleId: module.id,
+	selector: 'fm-missing-pet-ad-edit',
+	templateUrl: './missing-pet-ad-edit.component.html',
+	styleUrls: ['./missing-pet-ad-edit.component.scss']
 })
 export class MissingPetAdEditComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription[] = []
+	private subscriptions: Subscription[] = []
 
-  adMetadata = JSON.parse(JSON.stringify(metadata));
-  buttonEditorHelper: ButtonEditorHelper;
-  user = this.authService.currentUser;
-  ad: Ad;
-  id: Number;
-  url = '';
-  isBusy = false;
+	adMetadata = JSON.parse(JSON.stringify(metadata));
+	buttonEditorHelper: ButtonEditorHelper;
+	user = this.authService.currentUser;
+	ad: Ad;
+	id: number;
+	url = '';
+	isBusy = false;
 
-  context: ImagePicker = new ImagePicker({ mode: "single" })
+	context: ImagePicker = new ImagePicker({ mode: 'single' })
 
-  constructor(
-    private routerExtensions: RouterExtensions,
-    private homeService: HomeService,
-    private activatedRoute: ActivatedRoute,
-    private authService: AuthService) {
-  }
+	constructor(
+		private routerExtensions: RouterExtensions,
+		private homeService: HomeService,
+		private activatedRoute: ActivatedRoute,
+		private authService: AuthService) {
+	}
 
-  @ViewChild('adEditDataForm', { static: false }) adEditDataForm: RadDataFormComponent;
+	@ViewChild('adEditDataForm', { static: false }) adEditDataForm: RadDataFormComponent;
 
-  ngOnInit(): void {
-    let aux = this.activatedRoute.snapshot.params as Ad;
-    this.ad = { name: aux.name, age: aux.age, image: aux.image, description: aux.description } as Ad;
-    this.id = aux.id;
-    this.url = this.ad.image;
-  }
+	ngOnInit(): void {
+		const aux = this.activatedRoute.snapshot.params as Ad;
+		this.ad = { name: aux.name, age: aux.age, image: aux.image, description: aux.description } as Ad;
+		this.id = aux.id;
+		this.url = this.ad.image;
+	}
 
-  ngOnDestroy(): void {
-    while (this.subscriptions.length != 0) {
-      var sub = this.subscriptions.pop();
-      sub.unsubscribe();
-    }
-  }
+	ngOnDestroy(): void {
+		while (this.subscriptions.length != 0) {
+			const sub = this.subscriptions.pop();
+			sub.unsubscribe();
+		}
+	}
 
-  async validateAndCommit() {
-    let isValid = await this.adEditDataForm.dataForm.validateAndCommitAll();
-    if (isValid) {
-      this.subscriptions.push(
-        this.homeService
-          .updateAd(this.id, this.ad.name, this.ad.age, this.ad.image, this.ad.description)
-          .subscribe()
-      );
-      alert({
-        title: "Success!",
-        okButtonText: "OK",
-        message: "Ad updated."
-      });
-    }
-  }
+	async validateAndCommit() {
+		const isValid = await this.adEditDataForm.dataForm.validateAndCommitAll();
+		if (isValid) {
+			this.subscriptions.push(
+				this.homeService
+					.updateAd(this.id, this.ad.name, this.ad.age, this.ad.image, this.ad.description)
+					.subscribe()
+			);
+			alert({
+				title: 'Success!',
+				okButtonText: 'OK',
+				message: 'Ad updated.'
+			});
+		}
+	}
 
-  editorNeedsView(args) {
-    if (AndroidApplication) {
-      this.buttonEditorHelper = new ButtonEditorHelper();
-      this.buttonEditorHelper.editor = args.object;
-      const androidEditorView: android.widget.Button = new android.widget.Button(args.context);
-      const that = this;
-      androidEditorView.setOnClickListener(new android.view.View.OnClickListener({
-        onClick(view: android.view.View) {
-          that.handleTap(view, args.object);
-        }
-      }));
-      args.view = androidEditorView;
-      this.updateEditorValue(androidEditorView, this.ad.image);
-    }
-  }
+	editorNeedsView(args) {
+		if (AndroidApplication) {
+			this.buttonEditorHelper = new ButtonEditorHelper();
+			this.buttonEditorHelper.editor = args.object;
+			const androidEditorView: android.widget.Button = new android.widget.Button(args.context);
+			const that = this;
+			androidEditorView.setOnClickListener(new android.view.View.OnClickListener({
+				onClick(view: android.view.View) {
+					that.handleTap(view, args.object);
+				}
+			}));
+			args.view = androidEditorView;
+			this.updateEditorValue(androidEditorView, this.ad.image);
+		}
+	}
 
-  editorHasToApplyValue(args) {
-    this.buttonEditorHelper.updateEditorValue(args.view, args.value);
-  }
+	editorHasToApplyValue(args) {
+		this.buttonEditorHelper.updateEditorValue(args.view, args.value);
+	}
 
-  editorNeedsValue(args) {
-    args.value = this.buttonEditorHelper.buttonValue;
-  }
+	editorNeedsValue(args) {
+		args.value = this.buttonEditorHelper.buttonValue;
+	}
 
-  updateEditorValue(editorView, value) {
-    this.buttonEditorHelper.buttonValue = value;
-    let splitUrl = this.url.split('/');
-    let imageName = splitUrl[splitUrl.length - 1];
-    if (value === '')
-      editorView.setText("(tap to choose)");
-    else
-      editorView.setText(imageName + "\n (tap to change)");
-  }
+	updateEditorValue(editorView, value) {
+		this.buttonEditorHelper.buttonValue = value;
+		const splitUrl = this.url.split('/');
+		const imageName = splitUrl[splitUrl.length - 1];
+		if (value === '')
+			editorView.setText('(tap to choose)');
+		else
+			editorView.setText(imageName + '\n (tap to change)');
+	}
 
-  handleTap(editorView, editor) {
+	handleTap(editorView, editor) {
 
-    this.context
-      .authorize()
-      .then(() => {
-        return this.context.present();
-      })
-      .then(selection => {
-        selection.forEach(selected => {
-          this.url = selected.android;
-          this.updateEditorValue(editorView, this.url);
-          editor.notifyValueChanged();
-        })
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  }
+		this.context
+			.authorize()
+			.then(() => {
+				return this.context.present();
+			})
+			.then(selection => {
+				selection.forEach(selected => {
+					this.url = selected.android;
+					this.updateEditorValue(editorView, this.url);
+					editor.notifyValueChanged();
+				});
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
 
-  onDeleteTap() {
-    this.subscriptions.push(
-      this.homeService.deleteAd(this.id).subscribe()
-    );
-    alert({
-      title: "Success!",
-      okButtonText: "OK",
-      message: "Ad deleted."
-    });
-    this.routerExtensions.navigateByUrl('/home');
-  }
+	onDeleteTap() {
+		this.subscriptions.push(
+			this.homeService.deleteAd(this.id).subscribe()
+		);
+		alert({
+			title: 'Success!',
+			okButtonText: 'OK',
+			message: 'Ad deleted.'
+		});
+		this.routerExtensions.navigateByUrl('/home');
+	}
 
-  onBackButtonTap() {
-    this.routerExtensions.backToPreviousPage()
-  }
+	onBackButtonTap() {
+		this.routerExtensions.backToPreviousPage();
+	}
 }

@@ -1,10 +1,10 @@
 <ActivityIndicator [busy]="isBusy"></ActivityIndicator>
+<ActionBar [title]="ad?.name">
+    <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
+</ActionBar>
 
 <FlexboxLayout *ngIf="!isBusy" class="flex-container">
-    <ActionBar [title]="ad?.name">
-        <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
-    </ActionBar>
-    <ScrollView height="100%" class="ad-details">
+    <ScrollView class="ad-details">
         <StackLayout>
             <Image [src]="ad?.image"></Image>
 
@@ -15,7 +15,7 @@
             </StackLayout>
         </StackLayout>
     </ScrollView>
-    <FlexboxLayout class="flex-btn-container">
+    <FlexboxLayout class="flex-btnss-container">
         <Button *ngIf='owner !== true' class="ping-button" text="Ping" (tap)="onPingTap()"></Button>
         <Button *ngIf='owner === true' class="edit-button" text="Edit" (tap)="onEditTap()"></Button>
     </FlexboxLayout>

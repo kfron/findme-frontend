@@ -9,19 +9,19 @@ import { MissingPetAdListComponent } from './containers/missing-pet-ad-list/miss
 
 
 const routes: Routes = [
-  { path: '', component: MissingPetAdListComponent },
-  { path: 'ad-details/:id', component: MissingPetAdDetailsComponent },
-  {
-    path: 'ad-create', component: MissingPetAdCreateComponent,
-    children: [{
-      path: 'modal-view', component: MapModalComponent
-    }]
-  },
-  { path: 'ad-edit/:id/:user_id/:name/:age/:image/:description', component: MissingPetAdEditComponent }
-]
+	{ path: '', component: MissingPetAdListComponent },
+	{ path: 'ad-details/:id', component: MissingPetAdDetailsComponent },
+	{
+		path: 'ad-create', component: MissingPetAdCreateComponent,
+		children: [{
+			path: 'modal-view', component: MapModalComponent
+		}]
+	},
+	{ path: 'ad-edit/:id/:user_id/:name/:age/:image/:description', component: MissingPetAdEditComponent }
+];
 
 @NgModule({
-  imports: [NativeScriptRouterModule.forChild(routes)],
-  exports: [NativeScriptRouterModule],
+	imports: [NativeScriptRouterModule.forChild(routes)],
+	exports: [NativeScriptRouterModule],
 })
 export class HomeRoutingModule { }

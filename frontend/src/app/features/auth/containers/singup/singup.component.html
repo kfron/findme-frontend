@@ -9,7 +9,7 @@
         <TextField class="confirmPassword" hint="Confirm your password" [text]='confirmPassword' secure="true"
             returnKeyType="done" (blur)="onReturnPress($event)" (returnPress)="onReturnPress($event)"></TextField>
 
-        <Button text="Sign up" class="btn btn-primary m-t-20" (tap)="signup()"></Button>
+        <Button text="Sign up" class="btn btn-primary m-t-20" (tap)="onSignupTap()"></Button>
 
     </StackLayout>
     <Label class="login-label signup-label" (tap)="toggleForm()">

@@ -1,21 +1,27 @@
 <ActivityIndicator [busy]="isBusy"></ActivityIndicator>
 
+<ActionBar>
+    <ActionItem android.systemIcon="ic_menu_manage"></ActionItem>>
+</ActionBar>
+
+
 <FlexboxLayout *ngIf="!isBusy" class="flex-container">
-    <StackLayout class="stack-top-container">
-        <FlexboxLayout class="flex-top-btn-container">
-            <Button class="sort-btn" [color]="sortByDate ? (sortByDateAsc ? 'green' : 'red') : ''" text="Sort by date"
-                (tap)="onSortByDateTap()"></Button>
-            <Button class="sort-btn" [color]="sortByProximity ? (sortByProximityAsc ? 'green' : 'red') : ''"
-                text="Sort by proximity" (tap)="onSortByProximityTap()"></Button>
-            <Button class="sort-btn" [color]="sortByAge ? (sortByAgeAsc ? 'green' : 'red') : ''" text="Sort by age"
-                (tap)="onSortByAgeTap()"></Button>
-        </FlexboxLayout>
+    <FlexboxLayout class="top-container">
+        <GridLayout class="sort-btns-container" rows="50%" columns="*,*,*">
+            <Button row="0" col="0" class="sort-btn" [color]="sortByDate ? (sortByDateAsc ? 'green' : 'red') : ''"
+                text="Sort by date" (tap)="onSortByDateTap()"></Button>
+            <Button row="0" col="1" class="sort-btn"
+                [color]="sortByProximity ? (sortByProximityAsc ? 'green' : 'red') : ''" text="Sort by proximity"
+                (tap)="onSortByProximityTap()"></Button>
+            <Button row="0" col="2" class="sort-btn" [color]="sortByAge ? (sortByAgeAsc ? 'green' : 'red') : ''"
+                text="Sort by age" (tap)="onSortByAgeTap()"></Button>
+        </GridLayout>
         <Button class="toggle-radius-btn" [text]="toggleRadiusText" (tap)="onToggleRadiusTapped()"></Button>
-    </StackLayout>
-    <FlexboxLayout class="empty-label-container">
-        <Label class="empty-label" *ngIf="ads.length === 0" [text]="emptyText"></Label>
     </FlexboxLayout>
-    <RadListView [items]="ads" (itemTap)="onAdItemTap($event)" class="ads-list">
+    <FlexboxLayout *ngIf="ads.length === 0" class="content empty-label-container">
+        <Label class="empty-label" [text]="emptyText"></Label>
+    </FlexboxLayout>
+    <RadListView *ngIf="ads.length !== 0" [items]="ads" (itemTap)="onAdItemTap($event)" class="content ads-list">
         <ng-template tkListItemTemplate let-ad="item">
             <StackLayout class="ad-item-container">
                 <ng-container *ngIf="ad !== undefined">
@@ -31,8 +37,8 @@
             </StackLayout>
         </ng-template>
     </RadListView>
-    <FlexboxLayout class="flex-bot-btn-container">
-        <Button class="test-button" text="Map" (tap)="onMapButtonTap()"></Button>
-        <Button class="test-button" text="Add" (tap)="createNewAd()"></Button>
-    </FlexboxLayout>
+    <GridLayout class="bottom-nav-container" rows="50%" columns="*, *">
+        <Button col="0" class="nav-button" text="Map" (tap)="onMapButtonTap()"></Button>
+        <Button col="1" class="nav-button" text="Add" (tap)="createNewAd()"></Button>
+    </GridLayout>
 </FlexboxLayout>

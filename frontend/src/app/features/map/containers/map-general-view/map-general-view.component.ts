@@ -7,54 +7,56 @@ import { LocationService } from './../../../../shared/services/location.service'
 import { Finding } from './../../map.model';
 import { MapService } from './../../map.service';
 
-registerElement("MapView", () => require("nativescript-google-maps-sdk").MapView);
+registerElement('MapView', () => MapView);
+
+const zoomOptions: number[] = [15, 14, 11.7];
 
 @Component({
-  moduleId: module.id,
-  selector: 'fm-map-general-view',
-  templateUrl: './map-general-view.component.html',
-  styleUrls: ['./map-general-view.component.scss']
+	moduleId: module.id,
+	selector: 'fm-map-general-view',
+	templateUrl: './map-general-view.component.html',
+	styleUrls: ['./map-general-view.component.scss']
 })
 export class MapGeneralViewComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription[] = []
+	private subscriptions: Subscription[] = []
 
-  closestFindings: Array<Finding> = []
-  mapView: MapView
-  currentPosition: Position
-  toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`
+	closestFindings: Array<Finding> = []
+	mapView: MapView
+	currentPosition: Position
+	toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`
 
-  constructor(
-    private mapService: MapService,
-    private routerExtensions: RouterExtensions,
-    private locationService: LocationService,
-    private page: Page) {
-    this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
-  }
+	constructor(
+		private mapService: MapService,
+		private routerExtensions: RouterExtensions,
+		private locationService: LocationService,
+		private page: Page) {
+		this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
+	}
 
-  ngOnInit(): void {
-    this.subscriptions.push(
-      this.locationService.position$.subscribe(
-        (val) => { this.currentPosition = val }
-      )
-    )
-  }
+	ngOnInit(): void {
+		this.subscriptions.push(
+			this.locationService.position$.subscribe(
+				(val) => { this.currentPosition = val; }
+			)
+		);
+	}
 
-  ngOnDestroy(): void {
-    while (this.subscriptions.length != 0) {
-      let sub = this.subscriptions.pop();
-      sub.unsubscribe();
-    }
-  }
+	ngOnDestroy(): void {
+		while (this.subscriptions.length != 0) {
+			const sub = this.subscriptions.pop();
+			sub.unsubscribe();
+		}
+	}
 
-  async onMapReady(event) {
-    this.currentPosition = await this.locationService.getCurrentLocation();
+	async onMapReady(event) {
+		this.currentPosition = await this.locationService.getCurrentLocation();
 
-    this.mapView = event.object as MapView;
-    this.mapView.latitude = this.currentPosition.latitude;
-    this.mapView.longitude = this.currentPosition.longitude;
-    this.mapView.zoom = 13;
-    this.mapView.setStyle(<Style>JSON.parse(
-      `[
+		this.mapView = event.object as MapView;
+		this.mapView.latitude = this.currentPosition.latitude;
+		this.mapView.longitude = this.currentPosition.longitude;
+		this.mapView.zoom = zoomOptions[this.mapService.searchRadiusIndex];
+		this.mapView.setStyle(<Style>JSON.parse(
+			`[
         {
           "featureType": "poi.business",
           "stylers": [
@@ -65,161 +67,165 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
         }
       ]`));
 
-    this.subscriptions.push(this.mapService
-      .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
-      .subscribe((findings: any[]) => {
-        findings.map(val => {
-          val.found_at = new Date(val.found_at);
-          val.position = Position.positionFromLatLng(val.lat, val.lon);
-        });
-        this.closestFindings = findings;
-        this.setupAdMarkers();
-      })
-    )
+		this.subscriptions.push(this.mapService
+			.getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
+			.subscribe((findings: any[]) => {
+				findings.map(val => {
+					val.found_at = new Date(val.found_at);
+					val.position = Position.positionFromLatLng(val.lat, val.lon);
+				});
+				this.closestFindings = findings;
+				this.setupAdMarkers();
+			})
+		);
 
-    this.setupSearchCircle()
+		this.setupSearchCircle();
 
-    this.mapView.myLocationEnabled = true;
-  }
+		this.mapView.myLocationEnabled = true;
+	}
 
-  onMarkerSelect(event: MarkerEventData) {
-    if (event.marker.userData?.id) {
-      event.marker.snippet = this.formatTimeSnippet(event.marker.userData.found_at);
-      this.drawLine(event.marker.userData.id);
-    }
-  }
+	onMarkerSelect(event: MarkerEventData) {
+		if (event.marker.userData?.id) {
+			event.marker.snippet = this.formatTimeSnippet(event.marker.userData.found_at);
+			this.drawLine(event.marker.userData.id);
+		}
+	}
 
-  setupAdMarkers() {
-    for (let i = 0; i < this.closestFindings.length; i++) {
-      let marker = new Marker();
-      let find = this.closestFindings[i];
-      marker.position = find.position;
-      marker.userData =
-      {
-        id: find.id,
-        ad_id: find.ad_id,
-        found_at: find.found_at,
-        prev_id: find.prev_id,
-        next_id: find.next_id
-      }
-      marker.title = `${find.name}, ${find.age}`
-      marker.snippet = this.formatTimeSnippet(find.found_at);
-      this.mapView.addMarker(marker);
-    }
-  }
+	setupAdMarkers() {
+		for (let i = 0; i < this.closestFindings.length; i++) {
+			const marker = new Marker();
+			const find = this.closestFindings[i];
+			marker.position = find.position;
+			marker.userData =
+			{
+				id: find.id,
+				ad_id: find.ad_id,
+				found_at: find.found_at,
+				prev_id: find.prev_id,
+				next_id: find.next_id
+			};
+			marker.title = `${find.name}, ${find.age}`;
+			marker.snippet = this.formatTimeSnippet(find.found_at);
+			this.mapView.addMarker(marker);
+		}
+	}
 
-  setupSearchCircle() {
-    let circle = new Circle();
-    circle.center = this.currentPosition;
-    circle.radius = this.mapService.searchRadius * 1000;
-    circle.visible = true;
-    circle.fillColor = new Color(15, 85, 209, 250);
-    circle.strokeColor = new Color('#559cfa');
-    circle.strokeWidth = 2;
-    this.mapView.addCircle(circle);
-  }
+	setupSearchCircle() {
+		const circle = new Circle();
+		circle.center = this.currentPosition;
+		circle.radius = this.mapService.searchRadius * 1000;
+		circle.visible = true;
+		circle.fillColor = new Color(15, 85, 209, 250);
+		circle.strokeColor = new Color('#559cfa');
+		circle.strokeWidth = 2;
+		this.mapView.addCircle(circle);
+	}
 
-  formatTimeSnippet(foundAt: Date) {
-    let now = new Date();
-    let diff = Math.abs(now.valueOf() - foundAt.valueOf());
-    let weeks = Math.floor(diff / 604800000);
-    let days = Math.floor((diff - weeks * 604800000) / 86400000);
-    let hours = Math.floor((diff - weeks * 604800000 - days * 86400000) / 3600000);
-    let minutes = Math.floor((diff - weeks * 604800000 - days * 86400000 - hours * 3600000) / 60000);
-    let result = '';
-    result += weeks === 1 ? ' week ' : weeks > 1 ? ' weeks ' : ''
-    result += days === 1 ? days + ' day ' : days > 1 ? days + ' days ' : ''
-    if (weeks > 0) return result + 'ago'
-    result += hours === 1 ? hours + ' hour ' : hours > 1 ? hours + ' hours ' : ''
-    if (days > 0) return result + 'ago'
-    result += minutes === 1 ? minutes + ' minute ' : minutes > 1 ? minutes + ' minutes ' : ''
-    return result + 'ago'
-  }
+	formatTimeSnippet(foundAt: Date) {
+		const now = new Date();
+		const diff = Math.abs(now.valueOf() - foundAt.valueOf());
+		const weeks = Math.floor(diff / 604800000);
+		const days = Math.floor((diff - weeks * 604800000) / 86400000);
+		const hours = Math.floor((diff - weeks * 604800000 - days * 86400000) / 3600000);
+		const minutes = Math.floor((diff - weeks * 604800000 - days * 86400000 - hours * 3600000) / 60000);
+		let result = '';
+		result += weeks === 1 ? ' week ' : weeks > 1 ? ' weeks ' : '';
+		result += days === 1 ? days + ' day ' : days > 1 ? days + ' days ' : '';
+		if (weeks > 0) return result + 'ago';
+		result += hours === 1 ? hours + ' hour ' : hours > 1 ? hours + ' hours ' : '';
+		if (days > 0) return result + 'ago';
+		result += minutes === 1 ? minutes + ' minute ' : minutes > 1 ? minutes + ' minutes ' : '';
+		return result + 'ago';
+	}
 
-  drawLine(startId: number) {
-    this.subscriptions.push(this.mapService
-      .getPath(startId)
-      .subscribe((findings: any[]) => {
-        findings.map(val => {
-          val.position = Position.positionFromLatLng(val.lat, val.lon);
-        });
-        this.mapView.removeAllShapes();
-        this.setupSearchCircle()
-        let path = []
-        findings.forEach(find => {
-          path.push(find.position)
-        })
+	drawLine(startId: number) {
+		this.subscriptions.push(this.mapService
+			.getPath(startId)
+			.subscribe((findings: any[]) => {
+				findings.map(val => {
+					val.position = Position.positionFromLatLng(val.lat, val.lon);
+				});
+				this.mapView.removeAllShapes();
+				this.setupSearchCircle();
+				const path = [];
+				findings.forEach(find => {
+					path.push(find.position);
+				});
 
-        const polyline = new Polyline();
-        path.forEach(pos => {
-          polyline.addPoint(pos);
-          let circle = new Circle();
-          circle.center = pos;
-          circle.radius = 500;
-          circle.visible = true;
-          circle.fillColor = new Color(30, 106, 212, 68);
-          circle.strokeColor = new Color('#2b6616');
-          circle.strokeWidth = 2;
-          this.mapView.addCircle(circle);
-        });
-        polyline.visible = true;
-        polyline.width = 4;
-        polyline.color = new Color("#DD00b3fd");
-        polyline.geodesic = false;
-        this.mapView.addPolyline(polyline);
+				const polyline = new Polyline();
+				path.forEach(pos => {
+					polyline.addPoint(pos);
+					const circle = new Circle();
+					circle.center = pos;
+					circle.radius = 500;
+					circle.visible = true;
+					circle.fillColor = new Color(30, 106, 212, 68);
+					circle.strokeColor = new Color('#2b6616');
+					circle.strokeWidth = 2;
+					this.mapView.addCircle(circle);
+				});
+				polyline.visible = true;
+				polyline.width = 4;
+				polyline.color = new Color('#DD00b3fd');
+				polyline.geodesic = false;
+				this.mapView.addPolyline(polyline);
 
-        return path;
-      }))
+				return path;
+			}));
 
-  }
+	}
 
-  onInfoWindowTapped(event: MarkerEventData) {
-    if (event.marker.userData?.id) {
-      this.routerExtensions.navigate(['/home/ad-details', event.marker.userData.ad_id], {
-        animated: true,
-        transition: {
-          name: 'slide',
-          duration: 200,
-          curve: 'ease',
-        }
-      })
-    }
-  }
+	onInfoWindowTap(event: MarkerEventData) {
+		if (event.marker.userData?.id) {
+			this.routerExtensions.navigate(['/home/ad-details', event.marker.userData.ad_id], {
+				animated: true,
+				transition: {
+					name: 'slide',
+					duration: 200,
+					curve: 'ease',
+				}
+			});
+		}
+	}
 
-  onNavigatedTo(data: NavigatedData) {
-    if (data.isBackNavigation) {
-      this.mapView.removeAllMarkers();
-      this.mapView.removeAllShapes();
-      this.setupSearchCircle()
-      this.subscriptions.push(this.mapService
-        .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
-        .subscribe((findings: any[]) => {
-          findings.map(val => {
-            val.found_at = new Date(val.found_at);
-            val.position = Position.positionFromLatLng(val.lat, val.lon);
-          });
-          this.closestFindings = findings;
-          this.setupAdMarkers();
-        }))
-    }
-  }
+	onNavigatedTo(data: NavigatedData) {
+		if (data.isBackNavigation) {
+			this.mapView.removeAllMarkers();
+			this.mapView.removeAllShapes();
+			this.setupSearchCircle();
+			this.subscriptions.push(this.mapService
+				.getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
+				.subscribe((findings: any[]) => {
+					findings.map(val => {
+						val.found_at = new Date(val.found_at);
+						val.position = Position.positionFromLatLng(val.lat, val.lon);
+					});
+					this.closestFindings = findings;
+					this.setupAdMarkers();
+				}));
+		}
+	}
 
-  onToggleRadiusTapped(data) {
-    this.mapService.toggleSearchRadius();
-    this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`
-    
-    this.mapView.removeAllMarkers();
-    this.mapView.removeAllShapes();
-    this.subscriptions.push(this.mapService
-      .getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
-      .subscribe((findings: any[]) => {
-        findings.map(val => {
-          val.found_at = new Date(val.found_at);
-          val.position = Position.positionFromLatLng(val.lat, val.lon);
-        });
-        this.closestFindings = findings;
-        this.setupAdMarkers();
-      }))
-    this.setupSearchCircle()
-  }
+	onToggleRadiusTap() {
+		this.mapService.toggleSearchRadius();
+		this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`;
+		this.mapView.zoom = zoomOptions[this.mapService.searchRadiusIndex];
+		this.mapView.removeAllMarkers();
+		this.mapView.removeAllShapes();
+		this.subscriptions.push(this.mapService
+			.getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
+			.subscribe((findings: any[]) => {
+				findings.map(val => {
+					val.found_at = new Date(val.found_at);
+					val.position = Position.positionFromLatLng(val.lat, val.lon);
+				});
+				this.closestFindings = findings;
+				this.setupAdMarkers();
+			}));
+		this.setupSearchCircle();
+	}
+
+	onBackButtonTap() {
+		this.routerExtensions.backToPreviousPage();
+	}
 }

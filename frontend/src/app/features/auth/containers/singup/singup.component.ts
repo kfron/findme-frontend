@@ -2,8 +2,8 @@ import { Component, OnDestroy } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../auth.service';
-import { User } from './../../auth.model';
+import { User } from '../../../../shared/models/auth.model';
+import { UserService } from '../../../../shared/services/user.service';
 
 @Component({
 	moduleId: module.id,
@@ -19,7 +19,7 @@ export class SingupComponent implements OnDestroy {
 	password = '';
 	confirmPassword = '';
 
-	constructor(private authService: AuthService, private routerExtensions: RouterExtensions) { }
+	constructor(private userService: UserService, private routerExtensions: RouterExtensions) { }
 
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
@@ -35,11 +35,10 @@ export class SingupComponent implements OnDestroy {
 
 	onSignupTap(): void {
 		if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
-			this.subscriptions.push(this.authService.signup({ email: this.email, password: this.password, is_admin: false } as User)
+			this.subscriptions.push(this.userService.signup({ email: this.email, password: this.password, is_admin: false } as User)
 				.subscribe({
 					next: (res) => {
-						this.authService.currentUser = res;
-						this.routerExtensions.navigate(['/home']);
+						this.userService.currentUser = res;
 					},
 					error: (err) => {
 						console.log(err.error);

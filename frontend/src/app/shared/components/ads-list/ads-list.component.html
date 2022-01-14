@@ -1,0 +1,19 @@
+<FlexboxLayout *ngIf="ads.length === 0" class="empty-label-container">
+	<Label class="empty-label" [text]="emptyText"></Label>
+</FlexboxLayout>
+<RadListView *ngIf="ads.length !== 0" [items]="ads" (itemTap)="onAdItemTap($event)" class="ads-list">
+	<ng-template tkListItemTemplate let-ad="item">
+		<StackLayout class="ad-item-container">
+			<ng-container *ngIf="ad !== undefined">
+				<GridLayout class="ad-info" rows="*" columns="*,*,3*,2*">
+					<Label [text]="ad?.name" col="0"></Label>
+					<Label [text]="ad?.age" col="1"></Label>
+					<Label [text]="ad.found_at | timeSinceDate" col="2"></Label>
+					<Label [text]="ad.lastKnownPosition | distanceFrom: currentPosition" col="3"></Label>
+				</GridLayout>
+				<Image class="ad-image" [src]="ad?.image" height=300px stretch="aspectFill" lodeMode="async">
+				</Image>
+			</ng-container>
+		</StackLayout>
+	</ng-template>
+</RadListView>

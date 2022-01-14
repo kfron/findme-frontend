@@ -4,12 +4,15 @@
 
 <FlexboxLayout class="flexbox-container">
     <StackLayout class="map-view-container">
-        <MapView class="map-view" 
+        <MapView *ngIf="pinpointMode" class="map-view" 
             (mapReady)="onMapReady($event)" 
             (markerSelect)="onMarkerSelect()"
             (coordinateTapped)="onCoordinateTap($event)" 
             (markerDrag)="onMarkerDrag($event)">
         </MapView>
+		<MapView *ngIf="!pinpointMode" class="map-view"
+			(mapReady)="onMapReady($event)" >
+        </MapView>
     </StackLayout>
-    <Button class="submit-btn" text="Submit finding" [isEnabled]="isEnabled" (tap)="onSubmitTap()"></Button>
+    <Button *ngIf="pinpointMode" class="submit-btn" text="Submit finding" [isEnabled]="isEnabled" (tap)="onSubmitTap()"></Button>
 </FlexboxLayout>

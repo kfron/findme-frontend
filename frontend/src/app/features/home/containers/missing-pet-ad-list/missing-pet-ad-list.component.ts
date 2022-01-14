@@ -2,11 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { NavigatedData, ObservableArray, Page } from '@nativescript/core';
 import { Position } from 'nativescript-google-maps-sdk';
-import { ListViewEventData } from 'nativescript-ui-listview';
 import { Subscription } from 'rxjs';
-import { Ad } from '../../ads.model';
+import { Ad } from '../../../../shared/models/ads.model';
+import { MapService } from '../../../../shared/services/map.service';
 import { LocationService } from './../../../../shared/services/location.service';
-import { MapService } from './../../../map/map.service';
 import { HomeService } from './../../home.service';
 
 @Component({
@@ -69,18 +68,6 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 			const sub = this.subscriptions.pop();
 			sub.unsubscribe();
 		}
-	}
-
-	onAdItemTap(args: ListViewEventData) {
-		const tappedAdItem = (args.view.bindingContext as Ad);
-		this.routerExtensions.navigate(['/home/ad-details', tappedAdItem.id], {
-			animated: true,
-			transition: {
-				name: 'slide',
-				duration: 200,
-				curve: 'ease',
-			}
-		});
 	}
 
 	createNewAd() {
@@ -184,6 +171,10 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 				this.ads = new ObservableArray(ads as Ad[]);
 				this.isBusy = false;
 			}));
+	}
+
+	onUserIconTap() {
+		this.routerExtensions.navigateByUrl('/user');
 	}
 
 }

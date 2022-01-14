@@ -1,44 +1,30 @@
-<ActivityIndicator [busy]="isBusy"></ActivityIndicator>
-
 <ActionBar>
-    <ActionItem android.systemIcon="ic_menu_manage"></ActionItem>>
+	<ActionItem text="My profile" (tap)="onUserIconTap()"></ActionItem>>
 </ActionBar>
 
 
-<FlexboxLayout *ngIf="!isBusy" class="flex-container">
-    <FlexboxLayout class="top-container">
-        <GridLayout class="sort-btns-container" rows="50%" columns="*,*,*">
-            <Button row="0" col="0" class="sort-btn" [color]="sortByDate ? (sortByDateAsc ? 'green' : 'red') : ''"
-                text="Sort by date" (tap)="onSortByDateTap()"></Button>
-            <Button row="0" col="1" class="sort-btn"
-                [color]="sortByProximity ? (sortByProximityAsc ? 'green' : 'red') : ''" text="Sort by proximity"
-                (tap)="onSortByProximityTap()"></Button>
-            <Button row="0" col="2" class="sort-btn" [color]="sortByAge ? (sortByAgeAsc ? 'green' : 'red') : ''"
-                text="Sort by age" (tap)="onSortByAgeTap()"></Button>
-        </GridLayout>
-        <Button class="toggle-radius-btn" [text]="toggleRadiusText" (tap)="onToggleRadiusTapped()"></Button>
-    </FlexboxLayout>
-    <FlexboxLayout *ngIf="ads.length === 0" class="content empty-label-container">
-        <Label class="empty-label" [text]="emptyText"></Label>
-    </FlexboxLayout>
-    <RadListView *ngIf="ads.length !== 0" [items]="ads" (itemTap)="onAdItemTap($event)" class="content ads-list">
-        <ng-template tkListItemTemplate let-ad="item">
-            <StackLayout class="ad-item-container">
-                <ng-container *ngIf="ad !== undefined">
-                    <GridLayout class="ad-info" rows="*" columns="*,*,3*,2*">
-                        <Label [text]="ad?.name" col="0"></Label>
-                        <Label [text]="ad?.age" col="1"></Label>
-                        <Label [text]="ad.found_at | timeSinceDate" col="2"></Label>
-                        <Label [text]="ad.lastKnownPosition | distanceFrom: currentPosition" col="3"></Label>
-                    </GridLayout>
-                    <Image class="ad-image" [src]="ad?.image" height=300px stretch="aspectFill" lodeMode="async">
-                    </Image>
-                </ng-container>
-            </StackLayout>
-        </ng-template>
-    </RadListView>
-    <GridLayout class="bottom-nav-container" rows="50%" columns="*, *">
-        <Button col="0" class="nav-button" text="Map" (tap)="onMapButtonTap()"></Button>
-        <Button col="1" class="nav-button" text="Add" (tap)="createNewAd()"></Button>
-    </GridLayout>
+<FlexboxLayout class="flex-container">
+	<FlexboxLayout class="top-container">
+		<GridLayout class="sort-btns-container" rows="50%" columns="*,*,*">
+			<Button row="0" col="0" class="sort-btn" [color]="sortByDate ? (sortByDateAsc ? 'green' : 'red') : ''"
+				text="Sort by date" (tap)="onSortByDateTap()"></Button>
+			<Button row="0" col="1" class="sort-btn"
+				[color]="sortByProximity ? (sortByProximityAsc ? 'green' : 'red') : ''" text="Sort by proximity"
+				(tap)="onSortByProximityTap()"></Button>
+			<Button row="0" col="2" class="sort-btn" [color]="sortByAge ? (sortByAgeAsc ? 'green' : 'red') : ''"
+				text="Sort by age" (tap)="onSortByAgeTap()"></Button>
+		</GridLayout>
+		<Button class="toggle-radius-btn" [text]="toggleRadiusText" (tap)="onToggleRadiusTapped()"></Button>
+	</FlexboxLayout>
+	<FlexboxLayout *ngIf="!isBusy" class="content">
+		<fm-ads-list [emptyText]="emptyText" [ads]="ads">
+		</fm-ads-list>
+	</FlexboxLayout>
+	<FlexboxLayout *ngIf="isBusy" class="content loader-container">
+		<ActivityIndicator [busy]="isBusy"></ActivityIndicator>
+	</FlexboxLayout>
+	<GridLayout class="bottom-nav-container" rows="50%" columns="*, *">
+		<Button col="0" class="nav-button" text="Map" (tap)="onMapButtonTap()"></Button>
+		<Button col="1" class="nav-button" text="Add" (tap)="createNewAd()"></Button>
+	</GridLayout>
 </FlexboxLayout>

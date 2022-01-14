@@ -1,0 +1,27 @@
+{
+	"isReadOnly": false,
+	"commitMode": "Manual",
+	"validationMode": "OnLostFocus",
+	"propertyAnnotations": [
+		{
+			"name": "email",
+			"displayName": "New Email",
+			"index": 0,
+			"validators": [
+				{
+					"name": "NonEmpty",
+					"params": {
+						"errorMessage": "Email cannot be empty."
+					}
+				},
+				{
+					"name": "MaximumLength",
+					"params": {
+						"length": 50,
+						"errorMessage": "Email cannot be longer than 50 characters."
+					}
+				}
+			]
+		}
+	]
+}

@@ -4,10 +4,10 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
 	moduleId: module.id,
-	selector: 'fm-map-model-root',
-	templateUrl: './map-model-root.component.html'
+	selector: 'fm-map-modal-root',
+	templateUrl: './map-modal-root.component.html'
 })
-export class MapModelRootComponent implements OnInit {
+export class MapModalRootComponent implements OnInit {
 
 	constructor(
     private routerExtensions: RouterExtensions,

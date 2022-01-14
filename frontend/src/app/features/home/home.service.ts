@@ -3,9 +3,10 @@ import { Injectable } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { Request, session } from '@nativescript/background-http';
 import { Observable } from 'rxjs';
-import { AuthService } from './../auth/auth.service';
-import { MapService } from './../map/map.service';
-import { Ad } from './ads.model';
+import { Ad } from '~/app/shared/models/ads.model';
+import { UserService } from '~/app/shared/services/user.service';
+import { MapService } from '../../shared/services/map.service';
+
 
 @Injectable({
 	providedIn: 'root'
@@ -16,7 +17,7 @@ export class HomeService {
 
 	constructor(
 		private http: HttpClient,
-		private authService: AuthService,
+		private userService: UserService,
 		private routerExtensions: RouterExtensions,
 		private mapService: MapService) { }
 
@@ -42,7 +43,7 @@ export class HomeService {
 			method: 'POST'
 		} as Request;
 		const params = [
-			{ name: 'userId', value: this.authService.currentUser.id },
+			{ name: 'userId', value: this.userService.currentUser.id },
 			{ name: 'name', value: name },
 			{ name: 'age', value: age },
 			{ name: 'image', filename: image, mimeType: 'image/jpeg' },
@@ -68,7 +69,14 @@ export class HomeService {
 	}
 
 	updateAd(id, name, age, image, description) {
-		const res = this.http.put(this.serverUrl + 'ads/updateAd', { id: id, name: name, age: age, image: image, description: description });
+		const params = new HttpParams()
+			.set('id', id)
+			.set('name', name)
+			.set('age', age)
+			.set('image', image)
+			.set('description', description);
+
+		const res = this.http.put(this.serverUrl + 'ads/updateAd', params);
 		return res;
 	}
 

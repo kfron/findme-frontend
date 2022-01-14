@@ -10,14 +10,20 @@ import { MissingPetAdListComponent } from './containers/missing-pet-ad-list/miss
 
 const routes: Routes = [
 	{ path: '', component: MissingPetAdListComponent },
-	{ path: 'ad-details/:id', component: MissingPetAdDetailsComponent },
+	{
+		path: 'ad-details/:id', component: MissingPetAdDetailsComponent,
+		children: [{
+			path: 'modal-view', component: MapModalComponent
+		}]
+	},
 	{
 		path: 'ad-create', component: MissingPetAdCreateComponent,
 		children: [{
 			path: 'modal-view', component: MapModalComponent
 		}]
 	},
-	{ path: 'ad-edit/:id/:user_id/:name/:age/:image/:description', component: MissingPetAdEditComponent }
+	{ path: 'ad-edit/:id/:user_id/:name/:age/:image/:description', component: MissingPetAdEditComponent },
+
 ];
 
 @NgModule({

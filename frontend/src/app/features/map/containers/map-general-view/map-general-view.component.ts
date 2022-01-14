@@ -3,9 +3,9 @@ import { registerElement, RouterExtensions } from '@nativescript/angular';
 import { Color, NavigatedData, Page } from '@nativescript/core';
 import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, Style } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
+import { MapService } from '../../../../shared/services/map.service';
 import { LocationService } from './../../../../shared/services/location.service';
-import { Finding } from './../../map.model';
-import { MapService } from './../../map.service';
+import { Finding } from '../../../../shared/models/map.model';
 
 registerElement('MapView', () => MapView);
 
@@ -159,14 +159,14 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 					circle.center = pos;
 					circle.radius = 500;
 					circle.visible = true;
-					circle.fillColor = new Color(30, 106, 212, 68);
-					circle.strokeColor = new Color('#2b6616');
+					circle.fillColor = this.mapService.circleFillColor;
+					circle.strokeColor = this.mapService.circleStrokeColor;
 					circle.strokeWidth = 2;
 					this.mapView.addCircle(circle);
 				});
 				polyline.visible = true;
 				polyline.width = 4;
-				polyline.color = new Color('#DD00b3fd');
+				polyline.color = this.mapService.pathColor;
 				polyline.geodesic = false;
 				this.mapView.addPolyline(polyline);
 

@@ -5,8 +5,8 @@ import { AndroidApplication } from '@nativescript/core';
 import { ImagePicker } from '@nativescript/imagepicker';
 import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { Subscription } from 'rxjs';
-import { AuthService } from './../../../auth/auth.service';
-import { Ad } from './../../ads.model';
+import { Ad } from '~/app/shared/models/ads.model';
+import { UserService } from '~/app/shared/services/user.service';
 import { HomeService } from './../../home.service';
 import * as metadata from './adMetadata.json';
 import { ButtonEditorHelper } from './buttonEditorHelper';
@@ -23,7 +23,7 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 
 	adMetadata = JSON.parse(JSON.stringify(metadata));
 	buttonEditorHelper: ButtonEditorHelper;
-	user = this.authService.currentUser;
+	user = this.userService.currentUser;
 	ad: Ad;
 	id: number;
 	url = '';
@@ -35,7 +35,7 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		private routerExtensions: RouterExtensions,
 		private homeService: HomeService,
 		private activatedRoute: ActivatedRoute,
-		private authService: AuthService) {
+		private userService: UserService) {
 	}
 
 	@ViewChild('adEditDataForm', { static: false }) adEditDataForm: RadDataFormComponent;

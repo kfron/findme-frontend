@@ -1,10 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { RouterExtensions } from '@nativescript/angular';
+import { ModalDialogOptions, ModalDialogService, RouterExtensions } from '@nativescript/angular';
 import { NavigatedData, Page } from '@nativescript/core';
+import { Position } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
-import { Ad } from '../../ads.model';
-import { AuthService } from './../../../auth/auth.service';
+import { Ad } from '~/app/shared/models/ads.model';
+import { UserService } from '~/app/shared/services/user.service';
+import { MapModalRootComponent } from './../../components/map-modal-root/map-modal-root.component';
 import { HomeService } from './../../home.service';
 
 @Component({
@@ -19,12 +21,23 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 	owner = false;
 	isBusy = false;
 
+	options: ModalDialogOptions = {
+		viewContainerRef: this.vcRef,
+		context: {
+			pinpointMode: false,
+			adId: null
+		},
+		fullscreen: true
+	};
+
 	constructor(
-		private authService: AuthService,
+		private userService: UserService,
 		private activatedRoute: ActivatedRoute,
 		private homeService: HomeService,
 		private routerExtensions: RouterExtensions,
-		private page: Page) {
+		private page: Page,
+		private modalService: ModalDialogService,
+		private vcRef: ViewContainerRef) {
 		this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
 	}
 
@@ -33,13 +46,21 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 	ngOnInit(): void {
 		const id = +this.activatedRoute.snapshot.params.id;
 		if (id) {
+			this.options.context.adId = id;
 			this.isBusy = true;
 			this.subscriptions.push(this.homeService
 				.getAdByid(id)
-				.subscribe((ad: Ad[]) => {
-					this.ad = ad[0];
-					this.owner = this.authService.currentUser.id === this.ad.user_id;
+				.subscribe((ads: any[]) => {
+					ads.map(val => {
+						val.found_at = new Date(val.found_at);
+						val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon);
+						val.lat = undefined;
+						val.lon = undefined;
+					});
+					this.ad = ads[0];
+					this.owner = this.userService.currentUser.id === this.ad.user_id;
 					this.isBusy = false;
+					this.options.context.adPosition = this.ad.lastKnownPosition;
 				}));
 		}
 	}
@@ -77,6 +98,10 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 		});
 	}
 
+	async onShowRouteTap() {
+		await this.modalService.showModal(MapModalRootComponent, this.options);
+	}
+
 	onNavigatedTo(data: NavigatedData) {
 		if (data.isBackNavigation) {
 			this.isBusy = true;
@@ -84,7 +109,7 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 				.getAdByid(this.ad.id)
 				.subscribe((ad: Ad[]) => {
 					this.ad = ad[0];
-					this.owner = this.authService.currentUser.id === this.ad.user_id;
+					this.owner = this.userService.currentUser.id === this.ad.user_id;
 					this.isBusy = false;
 				}));
 		}

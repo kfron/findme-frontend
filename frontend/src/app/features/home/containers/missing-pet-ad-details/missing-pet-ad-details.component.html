@@ -1,22 +1,31 @@
 <ActivityIndicator [busy]="isBusy"></ActivityIndicator>
 <ActionBar [title]="ad?.name">
-    <NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
+	<NavigationButton android.systemIcon="ic_menu_back" (tap)="onBackButtonTap()"> </NavigationButton>
 </ActionBar>
 
 <FlexboxLayout *ngIf="!isBusy" class="flex-container">
-    <ScrollView class="ad-details">
-        <StackLayout>
-            <Image [src]="ad?.image"></Image>
-
-            <StackLayout>
-                <Label [text]="ad?.name"></Label>
-                <Label [text]="ad?.age"></Label>
-                <Label [text]="ad?.description"></Label>
-            </StackLayout>
-        </StackLayout>
-    </ScrollView>
-    <FlexboxLayout class="flex-btnss-container">
-        <Button *ngIf='owner !== true' class="ping-button" text="Ping" (tap)="onPingTap()"></Button>
-        <Button *ngIf='owner === true' class="edit-button" text="Edit" (tap)="onEditTap()"></Button>
-    </FlexboxLayout>
+	<ScrollView class="ad-details-sv">
+		<FlexboxLayout class="ad-details-flexbox">
+			<Image [src]="ad?.image"></Image>
+			<StackLayout>
+				<FlexboxLayout class="item-flexbox">
+					<Label class="item-field-name" text="Name"></Label>
+					<Label class="item-field-value" [text]="ad?.name"></Label>
+				</FlexboxLayout>
+				<FlexboxLayout class="item-flexbox">
+					<Label class="item-field-name" text="Age"></Label>
+					<Label class="item-field-value" [text]="ad?.age"></Label>
+				</FlexboxLayout>
+				<FlexboxLayout class="description">
+					<Label class="item-field-name" text="Description"></Label>
+					<Label class="item-field-value" [text]="ad?.description"></Label>
+				</FlexboxLayout>
+			</StackLayout>
+		</FlexboxLayout>
+	</ScrollView>
+	<FlexboxLayout class="flex-btns-container">
+		<Button class="route-button" text="Show route" (tap)="onShowRouteTap()"></Button>
+		<Button *ngIf='owner !== true' class="ping-button" text="Ping" (tap)="onPingTap()"></Button>
+		<Button *ngIf='owner === true' class="edit-button" text="Edit" (tap)="onEditTap()"></Button>
+	</FlexboxLayout>
 </FlexboxLayout>

@@ -5,7 +5,7 @@ import { CoreTypes } from '@nativescript/core';
 import { getCurrentLocation, Location } from '@nativescript/geolocation';
 import { MapView, Marker, MarkerEventData, Position, PositionEventData, Style } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
-import { MapService } from './../../map.service';
+import { MapService } from '../../../../shared/services/map.service';
 
 registerElement('MapView', () => MapView);
 

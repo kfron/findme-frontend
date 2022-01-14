@@ -4,26 +4,20 @@
     border-width: 1;
     border-color: pink;
 }
+
 Button {
     margin: 0;
 }
-.top-container,
+
 .flex-container {
     flex-direction: column;
 }
 
-.bottom-nav-container{
-    height: 10%;
-}
-
-.top-container {
-    height: 20%;
-}
-.content {
-    height: 70%;
-}
-
-.loader-container {
+.empty-label-container {
     align-items: center;
     justify-content: center;
+
+    .empty-label {
+        font-size: large;
+    }
 }

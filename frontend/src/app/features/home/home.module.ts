@@ -1,4 +1,5 @@
-import { MapModelRootComponent } from './components/map-model-root/map-model-root.component';
+import { SharedComponentsModule } from './../../shared/components/shared-components.module';
+import { MapModalRootComponent } from './components/map-modal-root/map-modal-root.component';
 import { MapModalComponent } from './components/map-modal/map-modal.component';
 import { PipesModule } from './../../shared/pipes/pipes.module';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
@@ -18,7 +19,7 @@ const components = [
 	MissingPetAdCreateComponent,
 	MissingPetAdEditComponent,
 	MapModalComponent,
-	MapModelRootComponent
+	MapModalRootComponent
 ];
 
 const modules = [
@@ -28,7 +29,8 @@ const modules = [
 	NativeScriptLocalizeModule,
 	NativeScriptHttpClientModule,
 	NativeScriptUIDataFormModule,
-	PipesModule
+	PipesModule,
+	SharedComponentsModule
 ];
 
 @NgModule({

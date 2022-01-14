@@ -1,20 +1,51 @@
 /* Add mobile styles for the component here.  */
 .flex-container {
-    flex-direction: column;
+	flex-direction: column;
 }
 
+.route-button,
 .edit-button,
 .ping-button {
-    margin: 0;
+	margin: 0;
 }
-.flex-btnss-container {
-    height: 10%;
-    .edit-button,
-    .ping-button {
-        width: 100%;
-    }
+.flex-btns-container {
+	height: 10%;
+
+	.route-button,
+	.edit-button,
+	.ping-button {
+		width: 100%;
+	}
+}
+.ad-details-sv {
+	height: 90%;
+}
+.ad-details-flexbox {
+	flex-direction: column;
+	align-items: center;
 }
 
-.ad-details {
-    height: 90%;
+.item-flexbox {
+	margin-top: 10%;
+	justify-content: space-between;
+}
+
+.description {
+	flex-direction: column;
+	align-items: center;
+}
+
+.item-flexbox,
+.description {
+	width: 60%;
+	border-bottom-width: 1;
+	border-bottom-color: pink;
+}
+
+.description {
+	border-bottom-width: 0;
+}
+
+.item-field-name {
+	font-size: larger;
 }

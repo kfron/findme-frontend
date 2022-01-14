@@ -3,14 +3,12 @@ import { ModalDialogOptions, ModalDialogService, registerElement, RouterExtensio
 import { AndroidApplication } from '@nativescript/core';
 import { ImagePicker } from '@nativescript/imagepicker';
 import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
-import { AuthService } from './../../../auth/auth.service';
-import { MapModelRootComponent } from './../../components/map-model-root/map-model-root.component';
+import { UserService } from '~/app/shared/services/user.service';
+import { MapModalRootComponent } from '../../components/map-modal-root/map-modal-root.component';
 import { HomeService } from './../../home.service';
 import * as metadata from './adMetadata.json';
 import { ImageButtonEditorHelper, PositionButtonEditorHelper } from './buttonEditorHelpers';
 import { AgeValidator, EmptyValidator } from './validators';
-
-
 
 registerElement('EmptyValidator', () => EmptyValidator);
 registerElement('AgeValidator', () => AgeValidator);
@@ -22,10 +20,13 @@ registerElement('AgeValidator', () => AgeValidator);
 	styleUrls: ['./missing-pet-ad-create.component.scss']
 })
 export class MissingPetAdCreateComponent implements OnInit {
-	adMetadata = JSON.parse(JSON.stringify(metadata));
 	private imageButtonEditorHelper: ImageButtonEditorHelper;
 	private positionButtonEditorHelper: PositionButtonEditorHelper;
-	user = this.authService.currentUser;
+
+	@ViewChild('adCreateDataForm', { static: false }) adCreateDataForm: RadDataFormComponent;
+
+	adMetadata = JSON.parse(JSON.stringify(metadata));
+	user = this.userService.currentUser;
 	ad;
 	url = '';
 
@@ -38,13 +39,12 @@ export class MissingPetAdCreateComponent implements OnInit {
 	};
 
 	constructor(
-		private authService: AuthService,
+		private userService: UserService,
 		private homeService: HomeService,
 		private routerExtensions: RouterExtensions,
 		private modalService: ModalDialogService,
 		private vcRef: ViewContainerRef) { }
 
-	@ViewChild('adCreateDataForm', { static: false }) adCreateDataForm: RadDataFormComponent;
 
 	ngOnInit() {
 		this.ad = { name: '', age: null, description: '', image: '', lastKnownPosition: '0 0' };
@@ -95,7 +95,7 @@ export class MissingPetAdCreateComponent implements OnInit {
 	}
 
 	async positionHandleTap(editorView, editor) {
-		const result = await this.modalService.showModal(MapModelRootComponent, this.options);
+		const result = await this.modalService.showModal(MapModalRootComponent, this.options);
 		if (result) {
 			this.ad.lastKnownPosition = result.latitude + ' ' + result.longitude;
 			this.positionUpdateEditorValue(editorView, this.ad.lastKnownPosition);

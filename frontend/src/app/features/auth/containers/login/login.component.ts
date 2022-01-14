@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../auth.service';
+import { UserService } from './../../../../shared/services/user.service';
 
 @Component({
 	moduleId: module.id,
@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 	email = '';
 	password = '';
 
-	constructor(private authService: AuthService, private routerExtensions: RouterExtensions) { }
+	constructor(private userService: UserService, private routerExtensions: RouterExtensions) { }
 
 	ngOnInit(): void {
 		this.email = 'test';
@@ -42,10 +42,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 	login(): void {
 		if (this.email && this.password) {
-			this.subscriptions.push(this.authService.login(this.email, this.password)
+			this.subscriptions.push(this.userService.login(this.email, this.password)
 				.subscribe({
 					next: (res) => {
-						this.authService.currentUser = res;
+						this.userService.currentUser = res;
 						this.routerExtensions.navigate(['/home/']);
 					},
 					error: (err) => {

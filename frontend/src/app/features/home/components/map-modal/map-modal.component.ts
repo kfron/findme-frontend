@@ -1,8 +1,9 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalDialogParams } from '@nativescript/angular';
-import { MapView, Marker, MarkerEventData, Position, PositionEventData, Style } from 'nativescript-google-maps-sdk';
+import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, PositionEventData, Style } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
 import { LocationService } from './../../../../shared/services/location.service';
+import { MapService } from './../../../../shared/services/map.service';
 
 @Component({
 	moduleId: module.id,
@@ -10,7 +11,7 @@ import { LocationService } from './../../../../shared/services/location.service'
 	templateUrl: './map-modal.component.html',
 	styleUrls: ['./map-modal.component.scss']
 })
-export class MapModalComponent implements OnDestroy {
+export class MapModalComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription[] = []
 
 	mapView: MapView
@@ -18,11 +19,24 @@ export class MapModalComponent implements OnDestroy {
 	isEnabled = false
 	markerPosition: Position
 
+	pinpointMode = true;
+	adId: number;
+	adPosition: Position;
+
 	constructor(
 		private params: ModalDialogParams,
-		private locationService: LocationService
-	) { }
+		private locationService: LocationService,
+		private mapService: MapService
+	) {
+	}
 
+	ngOnInit(): void {
+		if (this.params.context.pinpointMode !== undefined) {
+			this.pinpointMode = false;
+			this.adId = this.params.context.adId;
+			this.adPosition = this.params.context.adPosition;
+		}
+	}
 
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
@@ -39,16 +53,18 @@ export class MapModalComponent implements OnDestroy {
 	async onMapReady(event) {
 		this.currentLocation = await this.locationService.getCurrentLocation();
 
-		alert({
-			title: 'Tip',
-			okButtonText: 'Got it!',
-			message: 'TAP to place a marker.\nDRAG to change it\'s position.'
-		});
+		if (this.pinpointMode) {
+			alert({
+				title: 'Tip',
+				okButtonText: 'Got it!',
+				message: 'TAP to place a marker.\nDRAG to change it\'s position.'
+			});
+		}
 
 		this.mapView = event.object as MapView;
-		this.mapView.latitude = this.currentLocation.latitude;
-		this.mapView.longitude = this.currentLocation.longitude;
-		this.mapView.zoom = 17;
+		this.mapView.latitude = this.adPosition.latitude;
+		this.mapView.longitude = this.adPosition.longitude;
+		this.mapView.zoom = 13;
 		this.mapView.setStyle(<Style>JSON.parse(
 			`[
         {
@@ -64,6 +80,50 @@ export class MapModalComponent implements OnDestroy {
 
 		this.mapView.myLocationEnabled = true;
 
+		if (!this.pinpointMode) {
+			this.subscriptions.push(
+				this.mapService.getNewestFinding(this.adId)
+					.subscribe(
+						(val) => this.drawRoute(val[0].id)
+					)
+			);
+		}
+
+	}
+
+	drawRoute(startId) {
+		this.subscriptions.push(
+			this.mapService.getPath(startId)
+				.subscribe((findings: any[]) => {
+					findings.map(val => {
+						val.position = Position.positionFromLatLng(val.lat, val.lon);
+					});
+					this.mapView.removeAllShapes();
+					const path = [];
+					findings.forEach(find => {
+						path.push(find.position);
+					});
+
+					const polyline = new Polyline();
+					path.forEach(pos => {
+						polyline.addPoint(pos);
+						const circle = new Circle();
+						circle.center = pos;
+						circle.radius = 500;
+						circle.visible = true;
+						circle.fillColor = this.mapService.circleFillColor;
+						circle.strokeColor = this.mapService.circleStrokeColor;
+						circle.strokeWidth = 2;
+						this.mapView.addCircle(circle);
+					});
+					polyline.visible = true;
+					polyline.width = 4;
+					polyline.color = this.mapService.pathColor;
+					polyline.geodesic = false;
+					this.mapView.addPolyline(polyline);
+
+					return path;
+				}));
 	}
 
 	onMarkerSelect() {

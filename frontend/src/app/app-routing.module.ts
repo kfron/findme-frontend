@@ -15,6 +15,10 @@ const routes: Routes = [
 	{
 		path: 'map',
 		loadChildren: () => import('~/app/features/map/map.module').then((m) => m.MapModule)
+	},
+	{
+		path: 'user',
+		loadChildren: () => import('~/app/features/user/user.module').then((m) => m.UserModule)
 	}
 ];
 

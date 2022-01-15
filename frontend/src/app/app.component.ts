@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { enableLocationRequest, isEnabled } from '@nativescript/geolocation';
 import { LocationService } from './shared/services/location.service';
 
 @Component({
@@ -9,14 +8,8 @@ import { LocationService } from './shared/services/location.service';
 export class AppComponent implements OnInit {
 	constructor(
 		private locationService: LocationService
-	) {
-
-	}
-	async ngOnInit() {
-		const enabled = await isEnabled();
-		if (!enabled) {
-			await enableLocationRequest(true, true);
-		}
+	) { }
+	ngOnInit() {
 		this.locationService.position$.subscribe();
 	}
 }

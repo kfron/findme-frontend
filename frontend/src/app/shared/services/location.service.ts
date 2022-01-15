@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CoreTypes } from '@nativescript/core';
-import { getCurrentLocation, Location, watchLocation } from '@nativescript/geolocation';
+import { getCurrentLocation, Location, watchLocation, enableLocationRequest } from '@nativescript/geolocation';
 import { Position } from 'nativescript-google-maps-sdk';
 import { Subject } from 'rxjs';
 
@@ -21,16 +21,20 @@ export class LocationService {
 	position$: Subject<Position> = new Subject();
 
 	constructor() {
-		watchLocation(
-			(loc) => {
-				this._location = loc;
-				this.position$.next(Position.positionFromLatLng(loc.latitude, loc.longitude));
-			},
-			() => {
-				this.position$.complete();
-			},
-			options
-		);
+		enableLocationRequest(true, true)
+			.then(
+				() => {
+					watchLocation(
+						(loc) => {
+							this._location = loc;
+							this.position$.next(Position.positionFromLatLng(loc.latitude, loc.longitude));
+						},
+						() => {
+							this.position$.complete();
+						},
+						options
+					);
+				});
 	}
 
 	async getCurrentLocation(): Promise<Position> {

@@ -3,7 +3,7 @@ import { RouterExtensions } from '@nativescript/angular';
 import { NavigatedData, ObservableArray, Page } from '@nativescript/core';
 import { Position } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
-import { Ad } from '../../../../shared/models/ads.model';
+import { Ad } from '~/app/shared/models/ads.model';
 import { MapService } from '../../../../shared/services/map.service';
 import { LocationService } from './../../../../shared/services/location.service';
 import { HomeService } from './../../home.service';
@@ -44,20 +44,14 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
 		this.subscriptions.push(
 			this.locationService.position$.subscribe(
-				(val) => { this.currentPosition = val; }
+				val => this.currentPosition = val
 			)
 		);
 		this.isBusy = true;
 		this.subscriptions.push(this.homeService
 			.getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
-			.subscribe((ads: any[]) => {
-				ads.map(val => {
-					val.found_at = new Date(val.found_at);
-					val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon);
-					val.lat = undefined;
-					val.lon = undefined;
-				});
-				this.ads = new ObservableArray(ads as Ad[]);
+			.subscribe((ads: Ad[]) => {
+				this.ads = new ObservableArray(ads);
 				this.isBusy = false;
 			})
 		);
@@ -81,14 +75,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 			this.isBusy = true;
 			this.subscriptions.push(this.homeService
 				.getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
-				.subscribe((ads: any[]) => {
-					ads.map(val => {
-						val.found_at = new Date(val.found_at);
-						val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon);
-						val.lat = undefined;
-						val.lon = undefined;
-					});
-					this.ads = new ObservableArray(ads as Ad[]);
+				.subscribe((ads: Ad[]) => {
+					this.ads = new ObservableArray(ads);
 					this.isBusy = false;
 				}));
 		}
@@ -161,14 +149,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 		this.isBusy = true;
 		this.subscriptions.push(this.homeService
 			.getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
-			.subscribe((ads: any[]) => {
-				ads.map(val => {
-					val.found_at = new Date(val.found_at);
-					val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon);
-					val.lat = undefined;
-					val.lon = undefined;
-				});
-				this.ads = new ObservableArray(ads as Ad[]);
+			.subscribe((ads: Ad[]) => {
+				this.ads = new ObservableArray(ads);
 				this.isBusy = false;
 			}));
 	}

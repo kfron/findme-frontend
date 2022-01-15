@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
 import { Subscription } from 'rxjs';
@@ -10,7 +10,7 @@ import { UserService } from './../../../../shared/services/user.service';
 	templateUrl: './login.component.html',
 	styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit, OnDestroy {
+export class LoginComponent implements OnDestroy {
 
 	private subscriptions: Subscription[] = [];
 	private timeouts: NodeJS.Timeout[] = []
@@ -20,12 +20,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
 	constructor(private userService: UserService, private routerExtensions: RouterExtensions) { }
 
-	ngOnInit(): void {
-		this.email = 'test';
-		this.password = 'test';
-		this.login();
-
-	}
 
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
@@ -44,12 +38,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 		if (this.email && this.password) {
 			this.subscriptions.push(this.userService.login(this.email, this.password)
 				.subscribe({
-					next: (res) => {
-						this.userService.currentUser = res;
-						this.routerExtensions.navigate(['/home/']);
-					},
+					next: (res) => this.userService.currentUser = res,
 					error: (err) => {
-						console.log(err.error.message);
 						alert({
 							title: 'Find Me',
 							okButtonText: 'OK',
@@ -59,7 +49,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 							this.email = '';
 						}
 						this.password = '';
-					}
+					},
+					complete: () => this.routerExtensions.navigate(['/home/'])
 				}));
 		}
 	}

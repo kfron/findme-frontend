@@ -1,3 +1,4 @@
+import { Finding } from './../../../../shared/models/map.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalDialogParams } from '@nativescript/angular';
 import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, PositionEventData, Style } from 'nativescript-google-maps-sdk';
@@ -53,17 +54,22 @@ export class MapModalComponent implements OnInit, OnDestroy {
 	async onMapReady(event) {
 		this.currentLocation = await this.locationService.getCurrentLocation();
 
+
+		this.mapView = event.object as MapView;
 		if (this.pinpointMode) {
 			alert({
 				title: 'Tip',
 				okButtonText: 'Got it!',
 				message: 'TAP to place a marker.\nDRAG to change it\'s position.'
 			});
-		}
 
-		this.mapView = event.object as MapView;
-		this.mapView.latitude = this.adPosition.latitude;
-		this.mapView.longitude = this.adPosition.longitude;
+			this.mapView.latitude = this.currentLocation.latitude;
+			this.mapView.longitude = this.currentLocation.longitude;
+		} else {
+
+			this.mapView.latitude = this.adPosition.latitude;
+			this.mapView.longitude = this.adPosition.longitude;
+		}
 		this.mapView.zoom = 13;
 		this.mapView.setStyle(<Style>JSON.parse(
 			`[
@@ -84,7 +90,7 @@ export class MapModalComponent implements OnInit, OnDestroy {
 			this.subscriptions.push(
 				this.mapService.getNewestFinding(this.adId)
 					.subscribe(
-						(val) => this.drawRoute(val[0].id)
+						(val: Finding[]) => this.drawRoute(val[0].id)
 					)
 			);
 		}
@@ -94,10 +100,7 @@ export class MapModalComponent implements OnInit, OnDestroy {
 	drawRoute(startId) {
 		this.subscriptions.push(
 			this.mapService.getPath(startId)
-				.subscribe((findings: any[]) => {
-					findings.map(val => {
-						val.position = Position.positionFromLatLng(val.lat, val.lon);
-					});
+				.subscribe((findings: Finding[]) => {
 					this.mapView.removeAllShapes();
 					const path = [];
 					findings.forEach(find => {

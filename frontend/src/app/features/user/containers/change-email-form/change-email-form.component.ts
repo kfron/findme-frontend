@@ -36,16 +36,27 @@ export class ChangeEmailFormComponent implements OnDestroy {
 		if (isValid) {
 			this.subscriptions.push(
 				this.userService.changeEmail(this.data.email)
-					.subscribe()
-			);
-			
-			this.data = { email: '' };
+					.subscribe({
+						error: (err) => {
+							alert({
+								title: 'Find Me',
+								okButtonText: 'OK',
+								message: err.error.message
+							});
+							this.data = { email: '' };
+						},
+						complete: () => {
+							this.data = { email: '' };
 
-			alert({
-				title: 'Success!',
-				okButtonText: 'OK',
-				message: 'Email changed.'
-			});
+							alert({
+								title: 'Success!',
+								okButtonText: 'OK',
+								message: 'Email changed.'
+							});
+						}
+					})
+			);
+
 		}
 	}
 }

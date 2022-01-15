@@ -29,13 +29,7 @@ export class MyAdsViewComponent implements OnInit, OnDestroy {
 		this.isBusy = true;
 		this.subscriptions.push(this.userService
 			.getMyAds()
-			.subscribe((ads: any[]) => {
-				ads.map(val => {
-					val.found_at = new Date(val.found_at);
-					val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon);
-					val.lat = undefined;
-					val.lon = undefined;
-				});
+			.subscribe((ads: Ad[]) => {
 				this.ads = new ObservableArray(ads as Ad[]);
 				this.isBusy = false;
 			})

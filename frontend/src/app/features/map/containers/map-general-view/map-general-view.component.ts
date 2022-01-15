@@ -4,8 +4,8 @@ import { Color, NavigatedData, Page } from '@nativescript/core';
 import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, Style } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
 import { MapService } from '../../../../shared/services/map.service';
+import { Finding } from './../../../../shared/models/map.model';
 import { LocationService } from './../../../../shared/services/location.service';
-import { Finding } from '../../../../shared/models/map.model';
 
 registerElement('MapView', () => MapView);
 
@@ -69,11 +69,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 
 		this.subscriptions.push(this.mapService
 			.getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
-			.subscribe((findings: any[]) => {
-				findings.map(val => {
-					val.found_at = new Date(val.found_at);
-					val.position = Position.positionFromLatLng(val.lat, val.lon);
-				});
+			.subscribe((findings: Finding[]) => {
 				this.closestFindings = findings;
 				this.setupAdMarkers();
 			})
@@ -141,10 +137,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 	drawLine(startId: number) {
 		this.subscriptions.push(this.mapService
 			.getPath(startId)
-			.subscribe((findings: any[]) => {
-				findings.map(val => {
-					val.position = Position.positionFromLatLng(val.lat, val.lon);
-				});
+			.subscribe((findings: Finding[]) => {
 				this.mapView.removeAllShapes();
 				this.setupSearchCircle();
 				const path = [];
@@ -195,11 +188,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 			this.setupSearchCircle();
 			this.subscriptions.push(this.mapService
 				.getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
-				.subscribe((findings: any[]) => {
-					findings.map(val => {
-						val.found_at = new Date(val.found_at);
-						val.position = Position.positionFromLatLng(val.lat, val.lon);
-					});
+				.subscribe((findings: Finding[]) => {
 					this.closestFindings = findings;
 					this.setupAdMarkers();
 				}));
@@ -214,11 +203,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		this.mapView.removeAllShapes();
 		this.subscriptions.push(this.mapService
 			.getClosestTo(this.currentPosition.latitude, this.currentPosition.longitude, this.mapService.searchRadius)
-			.subscribe((findings: any[]) => {
-				findings.map(val => {
-					val.found_at = new Date(val.found_at);
-					val.position = Position.positionFromLatLng(val.lat, val.lon);
-				});
+			.subscribe((findings: Finding[]) => {
 				this.closestFindings = findings;
 				this.setupAdMarkers();
 			}));

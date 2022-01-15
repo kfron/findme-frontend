@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalDialogOptions, ModalDialogService, RouterExtensions } from '@nativescript/angular';
 import { NavigatedData, Page } from '@nativescript/core';
-import { Position } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
 import { Ad } from '~/app/shared/models/ads.model';
 import { UserService } from '~/app/shared/services/user.service';
@@ -50,14 +49,8 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 			this.isBusy = true;
 			this.subscriptions.push(this.homeService
 				.getAdByid(id)
-				.subscribe((ads: any[]) => {
-					ads.map(val => {
-						val.found_at = new Date(val.found_at);
-						val.lastKnownPosition = Position.positionFromLatLng(val.lat, val.lon);
-						val.lat = undefined;
-						val.lon = undefined;
-					});
-					this.ad = ads[0];
+				.subscribe((ad: Ad) => {
+					this.ad = ad;
 					this.owner = this.userService.currentUser.id === this.ad.user_id;
 					this.isBusy = false;
 					this.options.context.adPosition = this.ad.lastKnownPosition;
@@ -107,8 +100,8 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 			this.isBusy = true;
 			this.subscriptions.push(this.homeService
 				.getAdByid(this.ad.id)
-				.subscribe((ad: Ad[]) => {
-					this.ad = ad[0];
+				.subscribe((ad: Ad) => {
+					this.ad = ad;
 					this.owner = this.userService.currentUser.id === this.ad.user_id;
 					this.isBusy = false;
 				}));

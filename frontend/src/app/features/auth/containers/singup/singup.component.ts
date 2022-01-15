@@ -35,11 +35,8 @@ export class SingupComponent implements OnDestroy {
 
 	onSignupTap(): void {
 		if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
-			this.subscriptions.push(this.userService.signup({ email: this.email, password: this.password, is_admin: false } as User)
+			this.subscriptions.push(this.userService.signup({ email: this.email, password: this.password } as User)
 				.subscribe({
-					next: (res) => {
-						this.userService.currentUser = res;
-					},
 					error: (err) => {
 						console.log(err.error);
 						alert({
@@ -50,6 +47,14 @@ export class SingupComponent implements OnDestroy {
 						this.email = '';
 						this.password = '';
 						this.confirmPassword = '';
+					},
+					complete: () => {
+						alert({
+							title: 'Find Me',
+							okButtonText: 'OK',
+							message: 'Signup was successful!'
+						});
+						this.routerExtensions.navigate(['/home/']);
 					}
 				}));
 		}

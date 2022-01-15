@@ -28,6 +28,7 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 	id: number;
 	url = '';
 	isBusy = false;
+	imageChanged = false;
 
 	context: ImagePicker = new ImagePicker({ mode: 'single' })
 
@@ -57,16 +58,21 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 	async validateAndCommit() {
 		const isValid = await this.adEditDataForm.dataForm.validateAndCommitAll();
 		if (isValid) {
-			this.subscriptions.push(
+			if (this.imageChanged) {
 				this.homeService
-					.updateAd(this.id, this.ad.name, this.ad.age, this.ad.image, this.ad.description)
-					.subscribe()
-			);
-			alert({
-				title: 'Success!',
-				okButtonText: 'OK',
-				message: 'Ad updated.'
-			});
+					.updateAdWithImage(this.id, this.ad.name, this.ad.age, this.ad.image, this.ad.description);
+			} else {
+				this.subscriptions.push(
+					this.homeService
+						.updateAdWithoutImage(this.id, this.ad.name, this.ad.age, this.ad.description)
+						.subscribe()
+				);
+				alert({
+					title: 'Success!',
+					okButtonText: 'OK',
+					message: 'Ad updated.'
+				});
+			}
 		}
 	}
 
@@ -109,6 +115,7 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		this.context
 			.authorize()
 			.then(() => {
+				this.imageChanged = true;
 				return this.context.present();
 			})
 			.then(selection => {

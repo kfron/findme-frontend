@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Position } from 'nativescript-google-maps-sdk';
+import { Observable, tap, map } from 'rxjs';
 import { Ad } from '../models/ads.model';
 import { User } from '../models/auth.model';
 
@@ -15,12 +16,23 @@ export class UserService {
 
 	constructor(private http: HttpClient) { }
 
+	private mapAd(ad): Ad {
+		ad.found_at = new Date(ad.found_at);
+		ad.image = this.serverUrl + ad.image;
+		ad.lastKnownPosition = Position.positionFromLatLng(ad.lat, ad.lon);
+		ad.lat = undefined;
+		ad.lon = undefined;
+		return ad as Ad;
+	}
+
 	login(email: string, password: string): Observable<User> {
 		return (this.http.post(this.serverUrl + 'users/login', { email: email, password: password }) as Observable<User>);
 	}
 
 	signup(user: User): Observable<User> {
-		return (this.http.post(this.serverUrl + 'users/signup', user) as Observable<User>);
+		const observable = (this.http.post(this.serverUrl + 'users/signup', user) as Observable<User>);
+		return (observable.pipe(
+			tap(user => this.currentUser = user)));
 	}
 
 	changeEmail(email: string) {
@@ -41,14 +53,24 @@ export class UserService {
 
 	getMyAds(): Observable<Ad[]> {
 		const params = new HttpParams()
-			.set('id', this.currentUser.id);
-		return (this.http.get(this.serverUrl + 'ads/getMyAds', { params }) as Observable<Ad[]>);
+			.set('id', +this.currentUser.id);
+
+		const observable = (this.http.get(this.serverUrl + 'ads/getMyAds', { params }) as Observable<any[]>);
+
+		return (observable.pipe(tap(ads => {
+			ads.map(ad => this.mapAd(ad));
+		})) as Observable<Ad[]>);
 	}
 
 	getMyPings(): Observable<Ad[]> {
 		const params = new HttpParams()
 			.set('id', this.currentUser.id);
-		return (this.http.get(this.serverUrl + 'ads/getMyPings', { params }) as Observable<Ad[]>);
+
+		const observable = (this.http.get(this.serverUrl + 'ads/getMyPings', { params }) as Observable<any[]>);
+
+		return (observable.pipe(tap(ads => {
+			ads.map(ad => this.mapAd(ad));
+		})) as Observable<Ad[]>);
 	}
 
 	get currentUser(): User {

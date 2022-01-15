@@ -4,8 +4,8 @@ import { AndroidApplication } from '@nativescript/core';
 import { ImagePicker } from '@nativescript/imagepicker';
 import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { UserService } from '~/app/shared/services/user.service';
-import { MapModalRootComponent } from '../../components/map-modal-root/map-modal-root.component';
-import { HomeService } from './../../home.service';
+import { AdsService } from '../../ads.service';
+import { MapModalRootComponent } from '../map-modal-root/map-modal-root.component';
 import * as metadata from './adMetadata.json';
 import { ImageButtonEditorHelper, PositionButtonEditorHelper } from './buttonEditorHelpers';
 import { AgeValidator, EmptyValidator } from './validators';
@@ -25,7 +25,9 @@ export class MissingPetAdCreateComponent implements OnInit {
 
 	@ViewChild('adCreateDataForm', { static: false }) adCreateDataForm: RadDataFormComponent;
 
+	// metadata describing data form
 	adMetadata = JSON.parse(JSON.stringify(metadata));
+
 	user = this.userService.currentUser;
 	ad;
 	url = '';
@@ -40,7 +42,7 @@ export class MissingPetAdCreateComponent implements OnInit {
 
 	constructor(
 		private userService: UserService,
-		private homeService: HomeService,
+		private adsService: AdsService,
 		private routerExtensions: RouterExtensions,
 		private modalService: ModalDialogService,
 		private vcRef: ViewContainerRef) { }
@@ -53,7 +55,7 @@ export class MissingPetAdCreateComponent implements OnInit {
 	async validateAndCommit() {
 		const isValid = await this.adCreateDataForm.dataForm.validateAndCommitAll();
 		if (isValid) {
-			this.homeService.createAd(
+			this.adsService.createAd(
 				this.ad.name,
 				this.ad.age,
 				this.ad.image,
@@ -61,6 +63,8 @@ export class MissingPetAdCreateComponent implements OnInit {
 				this.ad.lastKnownPosition);
 		}
 	}
+
+	// functions used by position picking modal 
 
 	positionEditorNeedsView(args) {
 		if (AndroidApplication) {
@@ -102,6 +106,8 @@ export class MissingPetAdCreateComponent implements OnInit {
 			editor.notifyValueChanged();
 		}
 	}
+
+	// functions used by image picking modal
 
 	imageEditorNeedsView(args) {
 		if (AndroidApplication) {

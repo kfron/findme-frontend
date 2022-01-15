@@ -1,11 +1,11 @@
-import { MapModalComponent } from './components/map-modal/map-modal.component';
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { NativeScriptRouterModule } from '@nativescript/angular';
-import { MissingPetAdCreateComponent } from './containers/missing-pet-ad-create/missing-pet-ad-create.component';
-import { MissingPetAdDetailsComponent } from './containers/missing-pet-ad-details/missing-pet-ad-details.component';
-import { MissingPetAdEditComponent } from './containers/missing-pet-ad-edit/missing-pet-ad-edit.component';
-import { MissingPetAdListComponent } from './containers/missing-pet-ad-list/missing-pet-ad-list.component';
+import { MapModalComponent } from './components/map-modal/map-modal.component';
+import { MissingPetAdCreateComponent } from './components/missing-pet-ad-create/missing-pet-ad-create.component';
+import { MissingPetAdDetailsComponent } from './components/missing-pet-ad-details/missing-pet-ad-details.component';
+import { MissingPetAdEditComponent } from './components/missing-pet-ad-edit/missing-pet-ad-edit.component';
+import { MissingPetAdListComponent } from './components/missing-pet-ad-list/missing-pet-ad-list.component';
 
 
 const routes: Routes = [
@@ -30,4 +30,4 @@ const routes: Routes = [
 	imports: [NativeScriptRouterModule.forChild(routes)],
 	exports: [NativeScriptRouterModule],
 })
-export class HomeRoutingModule { }
+export class AdsRoutingModule { }

@@ -1,10 +1,10 @@
-import { Finding } from './../../../../shared/models/map.model';
+import { Finding } from '../../../../shared/models/map.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalDialogParams } from '@nativescript/angular';
 import { Circle, MapView, Marker, MarkerEventData, Polyline, Position, PositionEventData, Style } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
-import { LocationService } from './../../../../shared/services/location.service';
-import { MapService } from './../../../../shared/services/map.service';
+import { LocationService } from '../../../../shared/services/location.service';
+import { MapService } from '../../../../shared/services/map.service';
 
 @Component({
 	moduleId: module.id,

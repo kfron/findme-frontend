@@ -5,9 +5,9 @@ import { NavigatedData, Page } from '@nativescript/core';
 import { Subscription } from 'rxjs';
 import { Ad } from '~/app/shared/models/ads.model';
 import { UserService } from '~/app/shared/services/user.service';
-import { MapService } from './../../../../shared/services/map.service';
-import { MapModalRootComponent } from './../../components/map-modal-root/map-modal-root.component';
-import { HomeService } from './../../home.service';
+import { MapService } from '../../../../shared/services/map.service';
+import { AdsService } from '../../ads.service';
+import { MapModalRootComponent } from '../map-modal-root/map-modal-root.component';
 
 @Component({
 	moduleId: module.id,
@@ -33,7 +33,7 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 	constructor(
 		private userService: UserService,
 		private activatedRoute: ActivatedRoute,
-		private homeService: HomeService,
+		private adsService: AdsService,
 		private routerExtensions: RouterExtensions,
 		private mapService: MapService,
 		private page: Page,
@@ -49,7 +49,7 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 		if (id) {
 			this.options.context.adId = id;
 			this.isBusy = true;
-			this.subscriptions.push(this.homeService
+			this.subscriptions.push(this.adsService
 				.getAdByid(id)
 				.subscribe((ad: Ad) => {
 					this.ad = ad;
@@ -86,7 +86,7 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 	onNavigatedTo(data: NavigatedData) {
 		if (data.isBackNavigation) {
 			this.isBusy = true;
-			this.subscriptions.push(this.homeService
+			this.subscriptions.push(this.adsService
 				.getAdByid(this.ad.id)
 				.subscribe((ad: Ad) => {
 					this.ad = ad;

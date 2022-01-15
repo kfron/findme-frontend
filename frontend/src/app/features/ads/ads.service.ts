@@ -13,7 +13,7 @@ import { MapService } from '../../shared/services/map.service';
 @Injectable({
 	providedIn: 'root'
 })
-export class HomeService {
+export class AdsService {
 	//private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
 	private serverUrl = 'http://10.0.2.2:5000/';
 

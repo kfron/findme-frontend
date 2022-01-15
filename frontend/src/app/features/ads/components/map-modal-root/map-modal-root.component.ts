@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MapService } from './../../../../shared/services/map.service';
+import { MapService } from '../../../../shared/services/map.service';
 
 @Component({
 	moduleId: module.id,

@@ -6,8 +6,9 @@ import { ImagePicker } from '@nativescript/imagepicker';
 import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { Subscription } from 'rxjs';
 import { Ad } from '~/app/shared/models/ads.model';
+import { MapService } from '~/app/shared/services/map.service';
 import { UserService } from '~/app/shared/services/user.service';
-import { HomeService } from './../../home.service';
+import { AdsService } from '../../ads.service';
 import * as metadata from './adMetadata.json';
 import { ButtonEditorHelper } from './buttonEditorHelper';
 
@@ -34,7 +35,8 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private routerExtensions: RouterExtensions,
-		private homeService: HomeService,
+		private adsService: AdsService,
+		private mapService: MapService,
 		private activatedRoute: ActivatedRoute,
 		private userService: UserService) {
 	}
@@ -59,11 +61,11 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		const isValid = await this.adEditDataForm.dataForm.validateAndCommitAll();
 		if (isValid) {
 			if (this.imageChanged) {
-				this.homeService
+				this.adsService
 					.updateAdWithImage(this.id, this.ad.name, this.ad.age, this.ad.image, this.ad.description);
 			} else {
 				this.subscriptions.push(
-					this.homeService
+					this.adsService
 						.updateAdWithoutImage(this.id, this.ad.name, this.ad.age, this.ad.description)
 						.subscribe()
 				);
@@ -132,21 +134,14 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 
 	onDeleteTap() {
 		this.subscriptions.push(
-			this.homeService.deleteAd(this.id).subscribe()
+			this.adsService.deleteAd(this.id).subscribe()
 		);
 		alert({
 			title: 'Success!',
 			okButtonText: 'OK',
 			message: 'Ad deleted.'
 		});
-		this.routerExtensions.navigateByUrl('/home', {
-			animated: true,
-			transition: {
-				name: 'slide',
-				duration: 200,
-				curve: 'ease',
-			}
-		});
+		this.mapService.navigateTo(['/home/']);
 	}
 
 	onBackButtonTap() {

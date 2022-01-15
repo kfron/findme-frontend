@@ -6,7 +6,7 @@ const routes: Routes = [
 	{ path: '', redirectTo: '/auth', pathMatch: 'full' },
 	{
 		path: 'home',
-		loadChildren: () => import('~/app/features/home/home.module').then((m) => m.HomeModule)
+		loadChildren: () => import('~/app/features/ads/ads.module').then((m) => m.AdsModule)
 	},
 	{
 		path: 'auth',

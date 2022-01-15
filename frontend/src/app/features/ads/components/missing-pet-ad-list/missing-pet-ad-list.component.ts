@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { RouterExtensions } from '@nativescript/angular';
 import { NavigatedData, ObservableArray, Page } from '@nativescript/core';
 import { Position } from 'nativescript-google-maps-sdk';
 import { Subscription } from 'rxjs';
 import { Ad } from '~/app/shared/models/ads.model';
+import { LocationService } from '../../../../shared/services/location.service';
 import { MapService } from '../../../../shared/services/map.service';
-import { LocationService } from './../../../../shared/services/location.service';
-import { HomeService } from './../../home.service';
+import { AdsService } from '../../ads.service';
 
 @Component({
 	moduleId: module.id,
@@ -31,8 +30,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	emptyText = `No ads in ${this.mapService.searchRadius} km radius`
 
 	constructor(
-		private homeService: HomeService,
-		private routerExtensions: RouterExtensions,
+		private adsService: AdsService,
 		private locationService: LocationService,
 		private page: Page,
 		private mapService: MapService) {
@@ -48,7 +46,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 			)
 		);
 		this.isBusy = true;
-		this.subscriptions.push(this.homeService
+		this.subscriptions.push(this.adsService
 			.getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
 			.subscribe((ads: Ad[]) => {
 				this.ads = new ObservableArray(ads);
@@ -73,7 +71,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 			this.emptyText = `No ads in ${this.mapService.searchRadius} km radius`;
 			this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`;
 			this.isBusy = true;
-			this.subscriptions.push(this.homeService
+			this.subscriptions.push(this.adsService
 				.getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
 				.subscribe((ads: Ad[]) => {
 					this.ads = new ObservableArray(ads);
@@ -83,14 +81,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	}
 
 	onMapButtonTap() {
-		this.routerExtensions.navigateByUrl('/map', {
-			animated: true,
-			transition: {
-				name: 'slide',
-				duration: 200,
-				curve: 'ease',
-			}
-		});
+		this.mapService.navigateTo(['/map/']);
 	}
 
 	onSortByDateTap() {
@@ -154,7 +145,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 		this.emptyText = `No ads in ${this.mapService.searchRadius} km radius`;
 		this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`;
 		this.isBusy = true;
-		this.subscriptions.push(this.homeService
+		this.subscriptions.push(this.adsService
 			.getAdsList(this.currentPosition.latitude, this.currentPosition.longitude)
 			.subscribe((ads: Ad[]) => {
 				this.ads = new ObservableArray(ads);
@@ -163,14 +154,8 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	}
 
 	onUserIconTap() {
-		this.routerExtensions.navigateByUrl('/user', {
-			animated: true,
-			transition: {
-				name: 'slide',
-				duration: 200,
-				curve: 'ease',
-			}
-		});
+
+		this.mapService.navigateTo(['/user/']);
 	}
 
 }

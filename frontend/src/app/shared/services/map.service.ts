@@ -1,3 +1,4 @@
+import { RouterExtensions } from '@nativescript/angular';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Color } from '@nativescript/core';
@@ -5,6 +6,7 @@ import { Position } from 'nativescript-google-maps-sdk';
 import { Observable, tap } from 'rxjs';
 import { Finding } from './../models/map.model';
 import { UserService } from './user.service';
+import { ExtendedNavigationExtras } from '@nativescript/angular/lib/legacy/router/router-extensions';
 
 
 @Injectable({
@@ -22,7 +24,8 @@ export class MapService {
 
 	constructor(
 		private http: HttpClient,
-		private userService: UserService) { }
+		private userService: UserService,
+		private routerExtensions: RouterExtensions) { }
 
 	private mapFinding(finding): Finding {
 		finding.found_at = new Date(finding.found_at);
@@ -43,6 +46,18 @@ export class MapService {
 
 	toggleSearchRadius() {
 		this._searchRadiusIndex = (this._searchRadiusIndex + 1) % 3;
+	}
+
+	navigateTo(commands, extras?: ExtendedNavigationExtras) {
+		this.routerExtensions.navigate(commands, {
+			...extras,
+			animated: true,
+			transition: {
+				name: 'slide',
+				duration: 200,
+				curve: 'ease',
+			}
+		});
 	}
 
 	getClosestTo(lat: number, lon: number, dist: number): Observable<Finding[]> {

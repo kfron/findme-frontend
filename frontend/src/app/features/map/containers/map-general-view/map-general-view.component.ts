@@ -170,14 +170,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 
 	onInfoWindowTap(event: MarkerEventData) {
 		if (event.marker.userData?.id) {
-			this.routerExtensions.navigate(['/home/ad-details', event.marker.userData.ad_id], {
-				animated: true,
-				transition: {
-					name: 'slide',
-					duration: 200,
-					curve: 'ease',
-				}
-			});
+			this.mapService.navigateTo(['/home/ad-details', event.marker.userData.ad_id]);
 		}
 	}
 

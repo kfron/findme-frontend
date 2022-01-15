@@ -1,6 +1,6 @@
-import { ActivatedRoute } from '@angular/router';
-import { RouterExtensions } from '@nativescript/angular';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { MapService } from './../../../../shared/services/map.service';
 
 @Component({
 	moduleId: module.id,
@@ -10,12 +10,12 @@ import { Component, OnInit } from '@angular/core';
 export class MapModalRootComponent implements OnInit {
 
 	constructor(
-    private routerExtensions: RouterExtensions,
-    private activatedRoute: ActivatedRoute
+		private mapService: MapService,
+		private activatedRoute: ActivatedRoute
 	) { }
 
 	ngOnInit(): void {
-		this.routerExtensions.navigate(['modal-view'], { relativeTo: this.activatedRoute });
+		this.mapService.navigateTo(['modal-view'], { relativeTo: this.activatedRoute });
 	}
 
 }

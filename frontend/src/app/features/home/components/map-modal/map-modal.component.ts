@@ -46,17 +46,11 @@ export class MapModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
-	async onClose() {
-		const pos = await this.locationService.getCurrentLocation();
-		this.params.closeCallback(pos);
-	}
-
 	async onMapReady(event) {
-		this.currentLocation = await this.locationService.getCurrentLocation();
-
-
 		this.mapView = event.object as MapView;
+		
 		if (this.pinpointMode) {
+			this.currentLocation = await this.locationService.getCurrentLocation();
 			alert({
 				title: 'Tip',
 				okButtonText: 'Got it!',
@@ -70,6 +64,7 @@ export class MapModalComponent implements OnInit, OnDestroy {
 			this.mapView.latitude = this.adPosition.latitude;
 			this.mapView.longitude = this.adPosition.longitude;
 		}
+		
 		this.mapView.zoom = 13;
 		this.mapView.setStyle(<Style>JSON.parse(
 			`[

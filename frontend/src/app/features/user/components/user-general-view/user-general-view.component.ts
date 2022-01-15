@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterExtensions } from '@nativescript/angular';
 import { UserService } from '~/app/shared/services/user.service';
+import { MapService } from './../../../../shared/services/map.service';
 
 @Component({
 	moduleId: module.id,
@@ -12,7 +13,8 @@ export class UserGeneralViewComponent {
 
 	constructor(
 		private routerExtensions: RouterExtensions,
-		private userService: UserService
+		private userService: UserService,
+		private mapService: MapService
 	) { }
 
 	onBackButtonTap() {
@@ -20,19 +22,19 @@ export class UserGeneralViewComponent {
 	}
 
 	onEditTap() {
-		this.routerExtensions.navigate(['/user/edit']);
+		this.mapService.navigateTo(['/user/edit']);
 	}
 
 	onMyAdsTap() {
-		this.routerExtensions.navigate(['/user/ads']);
+		this.mapService.navigateTo(['/user/ads']);
 	}
 
 	onMyPingsTap() {
-		this.routerExtensions.navigate(['/user/pings']);
+		this.mapService.navigateTo(['/user/pings']);
 	}
 
 	onLogoutTap() {
 		this.userService.currentUser = undefined;
-		this.routerExtensions.navigateByUrl('/auth');
+		this.mapService.navigateTo(['/auth']);
 	}
 }

@@ -1,8 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
-import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
 import { Subscription } from 'rxjs';
-import { UserService } from './../../../../shared/services/user.service';
+import { UserService } from '../../../../shared/services/user.service';
+import { MapService } from './../../../../shared/services/map.service';
 
 @Component({
 	moduleId: module.id,
@@ -18,7 +18,9 @@ export class LoginComponent implements OnDestroy {
 	email = '';
 	password = '';
 
-	constructor(private userService: UserService, private routerExtensions: RouterExtensions) { }
+	constructor(
+		private userService: UserService,
+		private mapService: MapService) { }
 
 
 	ngOnDestroy(): void {
@@ -50,7 +52,7 @@ export class LoginComponent implements OnDestroy {
 						}
 						this.password = '';
 					},
-					complete: () => this.routerExtensions.navigate(['/home/'])
+					complete: () => this.mapService.navigateTo(['/home/'])
 				}));
 		}
 	}
@@ -66,7 +68,7 @@ export class LoginComponent implements OnDestroy {
 	}
 
 	toggleForm() {
-		this.routerExtensions.navigate(['/auth/signup']);
+		this.mapService.navigateTo(['/auth/signup']);
 	}
 
 }

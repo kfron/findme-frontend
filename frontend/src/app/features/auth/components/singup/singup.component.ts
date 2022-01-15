@@ -1,9 +1,9 @@
 import { Component, OnDestroy } from '@angular/core';
-import { RouterExtensions } from '@nativescript/angular';
 import { TextField } from '@nativescript/core';
 import { Subscription } from 'rxjs';
 import { User } from '../../../../shared/models/auth.model';
 import { UserService } from '../../../../shared/services/user.service';
+import { MapService } from './../../../../shared/services/map.service';
 
 @Component({
 	moduleId: module.id,
@@ -19,7 +19,9 @@ export class SingupComponent implements OnDestroy {
 	password = '';
 	confirmPassword = '';
 
-	constructor(private userService: UserService, private routerExtensions: RouterExtensions) { }
+	constructor(
+		private userService: UserService,
+		private mapService: MapService) { }
 
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
@@ -54,7 +56,7 @@ export class SingupComponent implements OnDestroy {
 							okButtonText: 'OK',
 							message: 'Signup was successful!'
 						});
-						this.routerExtensions.navigate(['/home/']);
+						this.mapService.navigateTo(['/home/']);
 					}
 				}));
 		}
@@ -64,6 +66,7 @@ export class SingupComponent implements OnDestroy {
 	onReturnPress(args) {
 		const textField = <TextField>args.object;
 
+		// Hide keyboard
 		this.timeouts.push(setTimeout(() => {
 			textField.dismissSoftInput();
 		}, 100));
@@ -72,7 +75,7 @@ export class SingupComponent implements OnDestroy {
 	}
 
 	toggleForm() {
-		this.routerExtensions.navigate(['/auth']);
+		this.mapService.navigateTo(['/auth']);
 	}
 
 }

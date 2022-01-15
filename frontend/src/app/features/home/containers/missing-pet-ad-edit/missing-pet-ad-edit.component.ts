@@ -139,7 +139,14 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 			okButtonText: 'OK',
 			message: 'Ad deleted.'
 		});
-		this.routerExtensions.navigateByUrl('/home');
+		this.routerExtensions.navigateByUrl('/home', {
+			animated: true,
+			transition: {
+				name: 'slide',
+				duration: 200,
+				curve: 'ease',
+			}
+		});
 	}
 
 	onBackButtonTap() {

@@ -1,8 +1,8 @@
-import { SingupComponent } from './containers/singup/singup.component';
+import { SingupComponent } from './components/singup/singup.component';
 import { NgModule } from '@angular/core';
 import { Routes } from '@angular/router';
 import { NativeScriptRouterModule } from '@nativescript/angular';
-import { LoginComponent } from './containers/login/login.component';
+import { LoginComponent } from './components/login/login.component';
 
 
 const routes: Routes = [

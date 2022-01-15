@@ -5,6 +5,7 @@ import { NavigatedData, Page } from '@nativescript/core';
 import { Subscription } from 'rxjs';
 import { Ad } from '~/app/shared/models/ads.model';
 import { UserService } from '~/app/shared/services/user.service';
+import { MapService } from './../../../../shared/services/map.service';
 import { MapModalRootComponent } from './../../components/map-modal-root/map-modal-root.component';
 import { HomeService } from './../../home.service';
 
@@ -34,6 +35,7 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 		private activatedRoute: ActivatedRoute,
 		private homeService: HomeService,
 		private routerExtensions: RouterExtensions,
+		private mapService: MapService,
 		private page: Page,
 		private modalService: ModalDialogService,
 		private vcRef: ViewContainerRef) {
@@ -70,25 +72,11 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 	}
 
 	onEditTap(): void {
-		this.routerExtensions.navigate(['/home/ad-edit', this.ad.id, this.ad.user_id, this.ad.name, this.ad.age, this.ad.image, this.ad.description], {
-			animated: true,
-			transition: {
-				name: 'slide',
-				duration: 200,
-				curve: 'ease',
-			}
-		});
+		this.mapService.navigateTo(['/home/ad-edit', this.ad.id, this.ad.user_id, this.ad.name, this.ad.age, this.ad.image, this.ad.description]);
 	}
 
 	onPingTap(): void {
-		this.routerExtensions.navigate(['/map/ping', this.ad.id], {
-			animated: true,
-			transition: {
-				name: 'slide',
-				duration: 200,
-				curve: 'ease',
-			}
-		});
+		this.mapService.navigateTo(['/map/ping', this.ad.id]);
 	}
 
 	async onShowRouteTap() {

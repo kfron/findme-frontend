@@ -65,7 +65,7 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	}
 
 	createNewAd() {
-		this.routerExtensions.navigate(['/home/ad-create']);
+		this.mapService.navigateTo(['/home/ad-create']);
 	}
 
 	onNavigatedTo(data: NavigatedData) {
@@ -83,7 +83,14 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	}
 
 	onMapButtonTap() {
-		this.routerExtensions.navigateByUrl('/map');
+		this.routerExtensions.navigateByUrl('/map', {
+			animated: true,
+			transition: {
+				name: 'slide',
+				duration: 200,
+				curve: 'ease',
+			}
+		});
 	}
 
 	onSortByDateTap() {
@@ -156,7 +163,14 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	}
 
 	onUserIconTap() {
-		this.routerExtensions.navigateByUrl('/user');
+		this.routerExtensions.navigateByUrl('/user', {
+			animated: true,
+			transition: {
+				name: 'slide',
+				duration: 200,
+				curve: 'ease',
+			}
+		});
 	}
 
 }

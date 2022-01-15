@@ -3,7 +3,6 @@ import { NativeScriptCommonModule, NativeScriptHttpClientModule, NativeScriptMod
 import { NativeScriptLocalizeModule } from '@nativescript/localize/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CoreModule } from './core/core.module';
 import { HomeModule } from './features/home/home.module';
 import { MapModule } from './features/map/map.module';
 
@@ -11,7 +10,6 @@ import { MapModule } from './features/map/map.module';
 const modules = [
 	NativeScriptModule,
 	AppRoutingModule,
-	CoreModule,
 	HomeModule,
 	MapModule,
 	NativeScriptCommonModule,

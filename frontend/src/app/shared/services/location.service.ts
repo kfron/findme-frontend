@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CoreTypes } from '@nativescript/core';
-import { getCurrentLocation, Location, watchLocation, enableLocationRequest } from '@nativescript/geolocation';
+import { enableLocationRequest, Location, watchLocation } from '@nativescript/geolocation';
 import { Position } from 'nativescript-google-maps-sdk';
 import { Subject } from 'rxjs';
 

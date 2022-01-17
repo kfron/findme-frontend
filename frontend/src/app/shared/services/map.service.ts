@@ -1,26 +1,27 @@
-import { RouterExtensions } from '@nativescript/angular';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { RouterExtensions } from '@nativescript/angular';
+import { ExtendedNavigationExtras } from '@nativescript/angular/lib/legacy/router/router-extensions';
 import { Color } from '@nativescript/core';
 import { Position } from 'nativescript-google-maps-sdk';
 import { Observable, tap } from 'rxjs';
+import { ApiPaths, environment } from './../../../../environment';
 import { Finding } from './../models/map.model';
 import { UserService } from './user.service';
-import { ExtendedNavigationExtras } from '@nativescript/angular/lib/legacy/router/router-extensions';
 
 
 @Injectable({
 	providedIn: 'root'
 })
 export class MapService {
-	//private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
-	private serverUrl = 'http://10.0.2.2:5000/';
 	private _searchRadiuses = [0.5, 1, 5];
 	private _searchRadiusIndex = 0;
 
 	public pathColor = new Color('#DD00b3fd');
 	public circleStrokeColor = new Color('#2b6616');
 	public circleFillColor = new Color(30, 106, 212, 68);
+
+	baseUrl = environment.baseUrl;
 
 	constructor(
 		private http: HttpClient,
@@ -61,12 +62,13 @@ export class MapService {
 	}
 
 	getClosestTo(lat: number, lon: number, dist: number): Observable<Finding[]> {
+		const url = `${this.baseUrl}/${ApiPaths.map}/getClosestTo`;
 		const params = new HttpParams()
 			.set('lat', lat)
 			.set('lon', lon)
 			.set('dist', dist);
 
-		const observable = this.http.get(this.serverUrl + 'map/getClosestTo', { params }) as Observable<any[]>;
+		const observable = this.http.get(url, { params }) as Observable<any[]>;
 
 		return (observable.pipe(tap(findings => {
 			findings.map(finding => this.mapFinding(finding));
@@ -74,10 +76,11 @@ export class MapService {
 	}
 
 	getPath(startId: number): Observable<Finding[]> {
+		const url = `${this.baseUrl}/${ApiPaths.map}/getPath`;
 		const params = new HttpParams()
 			.set('startId', startId);
 
-		const observable = (this.http.get(this.serverUrl + 'map/getPath', { params }) as Observable<any[]>);
+		const observable = (this.http.get(url, { params }) as Observable<any[]>);
 
 		return (observable.pipe(tap(findings => {
 			findings.map(finding => this.mapFinding(finding));
@@ -85,10 +88,11 @@ export class MapService {
 	}
 
 	getNewestFinding(adId: number) {
+		const url = `${this.baseUrl}/${ApiPaths.map}/getNewestFinding`;
 		const params = new HttpParams()
 			.set('adId', adId);
 
-		const observable = (this.http.get(this.serverUrl + 'map/getNewestFinding', { params }) as Observable<any[]>);
+		const observable = (this.http.get(url, { params }) as Observable<any[]>);
 
 		return (observable.pipe(tap(findings => {
 			findings.map(finding => this.mapFinding(finding));
@@ -96,7 +100,8 @@ export class MapService {
 	}
 
 	createFinding(adId: number, lat: number, lon: number) {
+		const url = `${this.baseUrl}/${ApiPaths.map}/createFinding`;
 		const userId = this.userService.currentUser.id;
-		return (this.http.post(this.serverUrl + 'map/createFinding', { adId, userId, lat, lon }));
+		return (this.http.post(url, { adId, userId, lat, lon }));
 	}
 }

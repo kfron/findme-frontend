@@ -19,6 +19,7 @@ export class TimeSinceDatePipe implements PipeTransform {
 		result += hours === 1 ? hours + ' hour ' : hours > 1 ? hours + ' hours ' : '';
 		if (days > 0) return result + 'ago';
 		result += minutes === 1 ? minutes + ' minute ' : minutes > 1 ? minutes + ' minutes ' : '';
+		if (diff === 0) return 'seconds ago';
 		return result + 'ago';
 	}
 

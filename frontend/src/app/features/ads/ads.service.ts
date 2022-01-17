@@ -8,14 +8,14 @@ import { tap } from 'rxjs/operators';
 import { Ad } from '~/app/shared/models/ads.model';
 import { UserService } from '~/app/shared/services/user.service';
 import { MapService } from '../../shared/services/map.service';
+import { ApiPaths, environment } from './../../../../environment';
 
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AdsService {
-	//private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
-	private serverUrl = 'http://10.0.2.2:5000/';
+	baseUrl = environment.baseUrl;
 
 	constructor(
 		private http: HttpClient,
@@ -25,7 +25,7 @@ export class AdsService {
 
 	private mapAd(ad): Ad {
 		ad.found_at = new Date(ad.found_at);
-		ad.image = this.serverUrl + ad.image;
+		ad.image = `${this.baseUrl}/${ad.image}`;
 		ad.lastKnownPosition = Position.positionFromLatLng(ad.lat, ad.lon);
 		ad.lat = undefined;
 		ad.lon = undefined;
@@ -33,12 +33,13 @@ export class AdsService {
 	}
 
 	getAdsList(lat, lon): Observable<Ad[]> {
+		const url = `${this.baseUrl}/${ApiPaths.ads}/getAdsList`;
 		const params = new HttpParams()
 			.set('lat', lat)
 			.set('lon', lon)
 			.set('dist', this.mapService.searchRadius);
 
-		const observable = (this.http.get(this.serverUrl + 'ads/getAdsList', { params }) as Observable<any[]>);
+		const observable = (this.http.get(url, { params }) as Observable<any[]>);
 
 		return (observable.pipe(tap(ads => {
 			ads.map(ad => this.mapAd(ad));
@@ -46,18 +47,22 @@ export class AdsService {
 	}
 
 	getAdByid(id: number): Observable<Ad> {
-		const observable = (this.http.get(this.serverUrl + 'ads/getAd?id=' + id) as Observable<Ad>);
+		const url = `${this.baseUrl}/${ApiPaths.ads}/getAd`;
+		const params = new HttpParams()
+			.set('id', id);
+		const observable = (this.http.get(url, { params }) as Observable<Ad>);
 
 		return (observable.pipe(map(ad => this.mapAd(ad))) as Observable<Ad>);
 	}
 
 	createAd(name, age, image, description, pos: string) {
+		const url = `${this.baseUrl}/${ApiPaths.ads}/createAd`;
 		const split = pos.split(' ');
 		const lat = +split[0];
 		const lon = +split[1];
 		const sess = session('file-upload');
 		const request = {
-			url: this.serverUrl + 'ads/createAd',
+			url: url,
 			method: 'POST'
 		} as Request;
 		const params = [
@@ -87,9 +92,10 @@ export class AdsService {
 	}
 
 	updateAdWithImage(id, name, age, image, description) {
+		const url = `${this.baseUrl}/${ApiPaths.ads}/updateAd`;
 		const sess = session('file-upload');
 		const request = {
-			url: this.serverUrl + 'ads/updateAd',
+			url: url,
 			method: 'PUT'
 		} as Request;
 		const params = [
@@ -116,18 +122,20 @@ export class AdsService {
 	}
 
 	updateAdWithoutImage(id, name, age, description) {
+		const url = `${this.baseUrl}/${ApiPaths.ads}/updateAd`;
 		const params = new HttpParams()
 			.set('id', id)
 			.set('name', name)
 			.set('age', age)
 			.set('description', description);
 
-		return this.http.put(this.serverUrl + 'ads/updateAd', params);
+		return this.http.put(url, params);
 	}
 
 	deleteAd(id) {
+		const url = `${this.baseUrl}/${ApiPaths.ads}/deleteAd`;
 		const params = new HttpParams().set('id', id);
-		return this.http.delete(this.serverUrl + 'ads/deleteAd', { params: params });
+		return this.http.delete(url, { params });
 	}
 
 }

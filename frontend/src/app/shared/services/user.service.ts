@@ -1,16 +1,16 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Position } from 'nativescript-google-maps-sdk';
-import { Observable, tap, map } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { Ad } from '../models/ads.model';
 import { User } from '../models/auth.model';
+import { ApiPaths, environment } from './../../../../environment';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class UserService {
-	//private serverUrl = "https://mysterious-inlet-42373.herokuapp.com/";
-	private serverUrl = 'http://10.0.2.2:5000/';
+	baseUrl = environment.baseUrl;
 
 	private _currentUser: User;
 
@@ -18,44 +18,57 @@ export class UserService {
 
 	private mapAd(ad): Ad {
 		ad.found_at = new Date(ad.found_at);
-		ad.image = this.serverUrl + ad.image;
+		ad.image = `${this.baseUrl}/${ad.image}`;
 		ad.lastKnownPosition = Position.positionFromLatLng(ad.lat, ad.lon);
-		ad.lat = undefined;
-		ad.lon = undefined;
+		delete ad.lat;
+		delete ad.lon;
 		return ad as Ad;
 	}
 
 	login(email: string, password: string): Observable<User> {
-		return (this.http.post(this.serverUrl + 'users/login', { email: email, password: password }) as Observable<User>);
+		const url = `${this.baseUrl}/${ApiPaths.users}/login`;
+		const observable = (this.http.post(url, { email: email, password: password }) as Observable<User>);
+		return (observable.pipe(
+			tap(user => this.currentUser = user)));
 	}
 
 	signup(user: User): Observable<User> {
-		const observable = (this.http.post(this.serverUrl + 'users/signup', user) as Observable<User>);
+		const url = `${this.baseUrl}/${ApiPaths.users}/signup`;
+		const observable = (this.http.post(url, user) as Observable<User>);
 		return (observable.pipe(
 			tap(user => this.currentUser = user)));
 	}
 
 	changeEmail(email: string) {
+		const url = `${this.baseUrl}/${ApiPaths.users}/changeEmail`;
+
 		const params = new HttpParams()
 			.set('id', this.currentUser.id)
 			.set('email', email);
-
-		return (this.http.put(this.serverUrl + 'users/changeEmail', params));
+		const observable = (this.http.put(url, params) as Observable<User>);
+		return (observable.pipe(
+			tap(user => this.currentUser = user)));
 	}
 
 	changePassword(password: string) {
+		const url = `${this.baseUrl}/${ApiPaths.users}/changePassword`;
+
 		const params = new HttpParams()
 			.set('id', this.currentUser.id)
 			.set('password', password);
 
-		return (this.http.put(this.serverUrl + 'users/changePassword', params));
+		const observable = (this.http.put(url, params) as Observable<User>);
+		return (observable.pipe(
+			tap(user => this.currentUser = user)));
 	}
 
 	getMyAds(): Observable<Ad[]> {
+		const url = `${this.baseUrl}/${ApiPaths.ads}/getMyAds`;
+
 		const params = new HttpParams()
 			.set('id', +this.currentUser.id);
 
-		const observable = (this.http.get(this.serverUrl + 'ads/getMyAds', { params }) as Observable<any[]>);
+		const observable = (this.http.get(url, { params }) as Observable<any[]>);
 
 		return (observable.pipe(tap(ads => {
 			ads.map(ad => this.mapAd(ad));
@@ -63,10 +76,12 @@ export class UserService {
 	}
 
 	getMyPings(): Observable<Ad[]> {
+		const url = `${this.baseUrl}/${ApiPaths.ads}/getMyPings`;
+
 		const params = new HttpParams()
 			.set('id', this.currentUser.id);
 
-		const observable = (this.http.get(this.serverUrl + 'ads/getMyPings', { params }) as Observable<any[]>);
+		const observable = (this.http.get(url, { params }) as Observable<any[]>);
 
 		return (observable.pipe(tap(ads => {
 			ads.map(ad => this.mapAd(ad));

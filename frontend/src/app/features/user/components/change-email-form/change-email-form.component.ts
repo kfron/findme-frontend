@@ -47,6 +47,7 @@ export class ChangeEmailFormComponent implements OnDestroy {
 						},
 						complete: () => {
 							this.data = { email: '' };
+							console.log(this.userService.currentUser.email);
 
 							alert({
 								title: 'Success!',

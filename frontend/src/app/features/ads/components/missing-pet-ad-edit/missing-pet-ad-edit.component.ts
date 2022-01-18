@@ -7,7 +7,6 @@ import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { Subscription } from 'rxjs';
 import { Ad } from '~/app/shared/models/ads.model';
 import { MapService } from '~/app/shared/services/map.service';
-import { UserService } from '~/app/shared/services/user.service';
 import { AdsService } from '../../ads.service';
 import * as metadata from './adMetadata.json';
 import { ButtonEditorHelper } from './buttonEditorHelper';
@@ -24,7 +23,6 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 
 	adMetadata = JSON.parse(JSON.stringify(metadata));
 	buttonEditorHelper: ButtonEditorHelper;
-	user = this.userService.currentUser;
 	ad: Ad;
 	id: number;
 	url = '';
@@ -37,8 +35,7 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		private routerExtensions: RouterExtensions,
 		private adsService: AdsService,
 		private mapService: MapService,
-		private activatedRoute: ActivatedRoute,
-		private userService: UserService) {
+		private activatedRoute: ActivatedRoute) {
 	}
 
 	@ViewChild('adEditDataForm', { static: false }) adEditDataForm: RadDataFormComponent;

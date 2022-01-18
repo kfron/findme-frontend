@@ -1,4 +1,4 @@
-const filePatterns = ['/tests/test-main.ts', 'tests/**/*.ts'];
+const filePatterns = ['tests/test-main.spec.ts', 'tests/**/*.ts'];
 module.exports = function (config) {
 	const options = {
 

@@ -18,6 +18,7 @@ export class AdsListComponent implements OnInit {
 
 	@Input() emptyText;
 	@Input() ads: ObservableArray<Ad>;
+	
 	currentPosition: Position;
 
 	constructor(

@@ -31,8 +31,8 @@ export class MapService {
 	private mapFinding(finding): Finding {
 		finding.found_at = new Date(finding.found_at);
 		finding.position = Position.positionFromLatLng(finding.lat, finding.lon);
-		finding.lat = undefined;
-		finding.lon = undefined;
+		delete finding.lat;
+		delete finding.lon;
 
 		return finding as Finding;
 	}

@@ -16,8 +16,8 @@ import { AdsService } from '../../ads.service';
 export class MissingPetAdListComponent implements OnInit, OnDestroy {
 
 	private subscriptions: Subscription[] = []
-	currentPosition: Position
 
+	currentPosition: Position
 	ads: ObservableArray<Ad> = new ObservableArray<Ad>([])
 	isBusy = false;
 	sortByProximity = false;
@@ -87,11 +87,14 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	onSortByDateTap() {
 		if (this.sortByDate)
 			this.sortByDateAsc = !this.sortByDateAsc;
+
 		this.sortByDate = true;
+
 		this.sortByAge = false;
 		this.sortByAgeAsc = true;
 		this.sortByProximity = false;
 		this.sortByProximityAsc = true;
+
 		this.ads = new ObservableArray<Ad>(
 			this.ads.sort((a, b) =>
 				this.sortByDateAsc ?
@@ -104,11 +107,14 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 	onSortByProximityTap() {
 		if (this.sortByProximity)
 			this.sortByProximityAsc = !this.sortByProximityAsc;
+
 		this.sortByProximity = true;
+
 		this.sortByAge = false;
 		this.sortByAgeAsc = true;
 		this.sortByDate = false;
 		this.sortByDateAsc = true;
+
 		this.ads = new ObservableArray<Ad>(
 			this.ads.sort((a, b) =>
 				this.sortByProximityAsc ?
@@ -116,6 +122,20 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 					this.getDistance(b.lastKnownPosition, this.currentPosition) - this.getDistance(a.lastKnownPosition, this.currentPosition))
 		);
 
+	}
+
+	onSortByAgeTap() {
+		if (this.sortByAge)
+			this.sortByAgeAsc = !this.sortByAgeAsc;
+
+		this.sortByAge = true;
+
+		this.sortByDate = false;
+		this.sortByDateAsc = true;
+		this.sortByProximity = false;
+		this.sortByProximityAsc = true;
+
+		this.ads = new ObservableArray<Ad>(this.ads.sort((a, b) => this.sortByAgeAsc ? a.age - b.age : b.age - a.age));
 	}
 
 	getDistance(a: Position, b: Position): number {
@@ -129,16 +149,6 @@ export class MissingPetAdListComponent implements OnInit, OnDestroy {
 		return Math.round(d * 1000);
 	}
 
-	onSortByAgeTap() {
-		if (this.sortByAge)
-			this.sortByAgeAsc = !this.sortByAgeAsc;
-		this.sortByAge = true;
-		this.sortByDate = false;
-		this.sortByDateAsc = true;
-		this.sortByProximity = false;
-		this.sortByProximityAsc = true;
-		this.ads = new ObservableArray<Ad>(this.ads.sort((a, b) => this.sortByAgeAsc ? a.age - b.age : b.age - a.age));
-	}
 
 	onToggleRadiusTapped() {
 		this.mapService.toggleSearchRadius();

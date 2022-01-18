@@ -4,7 +4,7 @@ export const environment = {
 };
 
 export enum ApiPaths {
-	ads = '/ads',
-	map = '/map',
-	users = '/users' 
+	ads = 'ads',
+	map = 'map',
+	users = 'users' 
 }

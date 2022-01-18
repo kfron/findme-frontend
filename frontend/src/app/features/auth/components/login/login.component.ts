@@ -40,7 +40,6 @@ export class LoginComponent implements OnDestroy {
 		if (this.email && this.password) {
 			this.subscriptions.push(this.userService.login(this.email, this.password)
 				.subscribe({
-					next: (res) => this.userService.currentUser = res,
 					error: (err) => {
 						alert({
 							title: 'Find Me',

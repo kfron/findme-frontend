@@ -27,8 +27,8 @@ export class AdsService {
 		ad.found_at = new Date(ad.found_at);
 		ad.image = `${this.baseUrl}/${ad.image}`;
 		ad.lastKnownPosition = Position.positionFromLatLng(ad.lat, ad.lon);
-		ad.lat = undefined;
-		ad.lon = undefined;
+		delete ad.lat;
+		delete ad.lon;
 		return ad as Ad;
 	}
 

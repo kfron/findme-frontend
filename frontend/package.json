@@ -21,6 +21,7 @@
     "@nativescript/localize": "^5.0.4",
     "@nativescript/theme": "^3.0.2",
     "@nativescript/unit-test-runner": "^2.0.5",
+    "nativescript": "^8.1.5",
     "nativescript-google-maps-sdk": "^3.0.2",
     "nativescript-ui-dataform": "^8.0.1",
     "nativescript-ui-listview": "^10.0.2",

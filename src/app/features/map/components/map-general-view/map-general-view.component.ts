@@ -263,6 +263,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 				this.closestFindings = findings;
 				this.setupAdMarkers();
 			}));
+		this.clearPath();
 		this.updateSearchCircle();
 	}
 

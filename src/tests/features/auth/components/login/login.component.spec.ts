@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { of } from 'rxjs';
 import { User } from '~/app/shared/models/auth.model';
 import { MapService } from '~/app/shared/services/map.service';
@@ -27,29 +28,49 @@ describe('LoginComponent', function () {
 	});
 
 	it('#login should call userService login when credentials are valid', function (done: DoneFn) {
-		component.email = 'test';
-		component.password = 'test';
+		component.data = { email: 'test', password: 'test' };
+		const dataForm = {
+			validateAndCommitAll: () => new Promise((resolve) => {
+				setTimeout(() => {
+					resolve(true);
+				}, 100);
+			}),
+			commitAll: () => { return; }
+		};
+		component.loginForm = { dataForm } as RadDataFormComponent;
 		userService.login.and.returnValue(of({} as User));
 
-		component.login();
-
-		expect(userService.login).toHaveBeenCalledOnceWith('test', 'test');
-
-		done();
+		component.validateAndCommit().then(
+			() => {
+				expect(userService.login).toHaveBeenCalledOnceWith('test', 'test');
+				done();
+			}
+		);
 	});
 
+	
 	it('#login should not call userService login when credentials are invalid', function (done: DoneFn) {
-		component.email = '';
-		component.password = '';
+		component.data = { email: '', password: '' };
+		const dataForm = {
+			validateAndCommitAll: () => new Promise((resolve) => {
+				setTimeout(() => {
+					resolve(false);
+				}, 100);
+			}),
+			commitAll: () => { return; }
+		};
+		component.loginForm = { dataForm } as RadDataFormComponent;
 		userService.login.and.returnValue(of({} as User));
 
-		component.login();
-
-		expect(userService.login).toHaveBeenCalledTimes(0);
-
+		component.validateAndCommit().then(
+			() => {
+				expect(userService.login).toHaveBeenCalledTimes(0);
+			}
+		);
 		done();
 	});
 
+	
 	it('#toggleForm should call for navigation', function () {
 		mapService.navigateTo.and.returnValue();
 

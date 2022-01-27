@@ -1,7 +1,7 @@
 {
 	"isReadOnly": false,
 	"commitMode": "Manual",
-	"validationMode": "OnLostFocus",
+	"validationMode": "Manual",
 	"propertyAnnotations": [
 		{
 			"name": "email",

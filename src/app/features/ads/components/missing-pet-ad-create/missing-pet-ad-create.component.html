@@ -10,6 +10,7 @@
                     <AgeValidator tkEntityPropertyValidators></AgeValidator>
                 </TKEntityProperty>
                 <TKEntityProperty tkDataFormProperty displayName="Position" name="lastKnownPosition" index="3">
+					<PositionValidator tkEntityPropertyValidators></PositionValidator>
                     <TKCustomPropertyEditor tkEntityPropertyEditor 
                         (editorNeedsView)="positionEditorNeedsView($event)" 
                         (editorHasToApplyValue)="positionEditorHasToApplyValue($event)"
@@ -17,7 +18,7 @@
                     </TKCustomPropertyEditor>
                 </TKEntityProperty>
                 <TKEntityProperty tkDataFormProperty displayName="Image" name="image" index="4">
-                    <EmptyValidator tkEntityPropertyValidators></EmptyValidator>
+                    <ImageValidator tkEntityPropertyValidators></ImageValidator>
                     <TKCustomPropertyEditor tkEntityPropertyEditor 
                         (editorNeedsView)="imageEditorNeedsView($event)"
                         (editorHatToApplyValue)="imageEditorHasToApplyValue($event)"

@@ -1,0 +1,58 @@
+{
+	"isReadOnly": false,
+	"commitMode": "Manual",
+	"validationMode": "Manual",
+	"propertyAnnotations": [
+		{
+			"name": "email",
+			"displayName": "Email",
+			"hintText": "Enter your email",
+			"index": 0,
+			"validators": [
+				{
+					"name": "NonEmpty",
+					"params": {
+						"errorMessage": "Email cannot be empty."
+					}
+				},
+				{
+					"name": "MaximumLength",
+					"params": {
+						"length": 50,
+						"errorMessage": "Email cannot be longer than 50 characters."
+					}
+				}
+			]
+		},
+		{
+			"name": "password",
+			"displayName": "Password",
+			"hintText": "Enter your password",
+			"index": 1,
+			"editor": "Password",
+			"validators": [
+				{
+					"name": "NonEmpty",
+					"params": {
+						"errorMessage": "Password cannot be empty."
+					}
+				},
+				{
+					"name": "MaximumLength",
+					"params": {
+						"length": 50,
+						"errorMessage": "Password cannot be longer than 50 characters."
+					}
+				}
+			]
+
+		},
+		{
+			"name": "confirmPassword",
+			"displayName": "Confirm password",
+			"hintText": "Confirm your password",
+			"index": 2,
+			"editor": "Password"
+		}
+	]
+}

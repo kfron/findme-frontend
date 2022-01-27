@@ -1,18 +1,12 @@
 <FlexboxLayout class="page">
-    <StackLayout class="form">
-        <TextField class="email" hint="Enter your email" [text]='email' secure="false" keyboardType="email"
-            returnKeyType="next" (blur)="onReturnPress($event)" (returnPress)="onReturnPress($event)"></TextField>
-
-        <TextField class="password" hint="Enter your password" [text]='password' secure="true" returnKeyType="done"
-            (blur)="onReturnPress($event)" (returnPress)="onReturnPress($event)"></TextField>
-
-        <Button text="Login" class="btn btn-primary m-t-20" (tap)="login()"></Button>
-
-    </StackLayout>
-    <Label class="login-label signup-label" (tap)="toggleForm()">
-        <FormattedString>
-            <Span text="Don't have an account? "></Span>
-            <Span text="Sign up" class="bold"></Span>
-        </FormattedString>
-    </Label>
+	<StackLayout class="form">
+		<RadDataForm #loginForm [metadata]="loginMetadata" [source]="data"></RadDataForm>
+		<Button class="btn btn-primary m-t-20" text="Login" (tap)="validateAndCommit()"></Button>
+	</StackLayout>
+	<Label class="login-label signup-label" (tap)="toggleForm()">
+		<FormattedString>
+			<Span text="Don't have an account? "></Span>
+			<Span text="Sign up" class="bold"></Span>
+		</FormattedString>
+	</Label>
 </FlexboxLayout>

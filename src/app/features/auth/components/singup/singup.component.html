@@ -1,4 +1,4 @@
-<FlexboxLayout class="page">
+<!--<FlexboxLayout class="page">
     <StackLayout class="form">
         <TextField class="email" hint="Enter your email" [text]='email' secure="false" keyboardType="email"
             returnKeyType="next" (blur)="onReturnPress($event)" (returnPress)="onReturnPress($event)"></TextField>
@@ -13,6 +13,18 @@
 
     </StackLayout>
     <Label class="login-label signup-label" (tap)="toggleForm()">
+        <FormattedString>
+            <Span text="Already have an account? "></Span>
+            <Span text="Log in" class="bold"></Span>
+        </FormattedString>
+    </Label>
+</FlexboxLayout>--->
+<FlexboxLayout class="page">
+	<StackLayout class="form">
+		<RadDataForm #signupForm [metadata]="signupMetadata" [source]="data"></RadDataForm>
+		<Button class="btn btn-primary m-t-20" text="Sign up" (tap)="validateAndCommit()"></Button>
+	</StackLayout>
+	<Label class="login-label signup-label" (tap)="toggleForm()">
         <FormattedString>
             <Span text="Already have an account? "></Span>
             <Span text="Log in" class="bold"></Span>

@@ -1,8 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
-import { TextField } from '@nativescript/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { Subscription } from 'rxjs';
 import { UserService } from '../../../../shared/services/user.service';
 import { MapService } from './../../../../shared/services/map.service';
+import * as metadata from './loginMetadata.json';
+
 
 @Component({
 	moduleId: module.id,
@@ -13,10 +15,11 @@ import { MapService } from './../../../../shared/services/map.service';
 export class LoginComponent implements OnDestroy {
 
 	private subscriptions: Subscription[] = [];
-	private timeouts: NodeJS.Timeout[] = []
 
-	email = '';
-	password = '';
+	@ViewChild('loginForm') loginForm: RadDataFormComponent;
+
+	loginMetadata = JSON.parse(JSON.stringify(metadata));
+	data = { email: '', password: '' };
 
 	constructor(
 		private userService: UserService,
@@ -29,43 +32,37 @@ export class LoginComponent implements OnDestroy {
 			sub.unsubscribe();
 			sub = null;
 		}
-		while (this.timeouts.length != 0) {
-			let timeout = this.timeouts.pop();
-			clearTimeout(timeout);
-			timeout = null;
-		}
 	}
 
-	login(): void {
-		if (this.email && this.password) {
-			this.subscriptions.push(this.userService.login(this.email, this.password)
-				.subscribe({
-					error: (err) => {
-						alert({
-							title: 'Find Me',
-							okButtonText: 'OK',
-							message: err.error.message
-						});
-						if (err.error.message !== 'Incorrect password.') {
-							this.email = '';
+	async validateAndCommit() {
+		const isValid = await this.loginForm.dataForm.validateAndCommitAll();
+
+		if (isValid) {
+			this.subscriptions.push(
+				this.userService.login(this.data.email, this.data.password)
+					.subscribe({
+						error: (err) => {
+							alert({
+								title: 'Find Me',
+								okButtonText: 'OK',
+								message: err.error.message
+							});
+							if (err.error.message !== 'Incorrect password.') {
+								this.data = { email: '', password: this.data.password };
+							}
+							this.data = { email: '', password: '' };
+							this.loginForm.dataForm.commitAll();
+						},
+						complete: () => {
+							this.data = { email: '', password: '' };
+							this.mapService.navigateTo(['/home/']);
 						}
-						this.password = '';
-					},
-					complete: () => this.mapService.navigateTo(['/home/'])
-				}));
+					})
+			);
+
 		}
 	}
-
-	onReturnPress(args) {
-		const textField = <TextField>args.object;
-
-		this.timeouts.push(setTimeout(() => {
-			textField.dismissSoftInput();
-		}, 100));
-
-		this[textField.className] = textField.text;
-	}
-
+	
 	toggleForm() {
 		this.mapService.navigateTo(['/auth/signup']);
 	}

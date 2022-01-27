@@ -34,30 +34,37 @@ export class ChangePasswordFormComponent implements OnDestroy {
 
 		const newPass = this.changePasswordForm.dataForm.getPropertyByName('newPassword');
 		const confirmNewPass = this.changePasswordForm.dataForm.getPropertyByName('confirmNewPassword');
-
-		if (confirmNewPass.valueCandidate !== newPass.valueCandidate) {
-			newPass.errorMessage = `Password and confirmation don't match`;
-			this.changePasswordForm.dataForm.notifyValidated('confirmNewPassword', false);
-			isValid = false;
+		if (newPass.valueCandidate.length === 0) {
+			newPass.errorMessage = `Password cannot be empty.`;
+			this.changePasswordForm.dataForm.notifyValidated('newPassword', false);
+		} else if (newPass.valueCandidate.length > 50) {
+			newPass.errorMessage = `Password cannot be longer than 50 characters.`;
+			this.changePasswordForm.dataForm.notifyValidated('newPassword', false);
 		} else {
-			this.changePasswordForm.dataForm.notifyValidated('confirmNewPassword', true);
-		}
+			if (confirmNewPass.valueCandidate !== newPass.valueCandidate) {
+				confirmNewPass.errorMessage = `Password and confirmation don't match.`;
+				this.changePasswordForm.dataForm.notifyValidated('confirmNewPassword', false);
+				isValid = false;
+			} else {
+				this.changePasswordForm.dataForm.notifyValidated('confirmNewPassword', true);
+			}
 
-		if (isValid) {
-			this.changePasswordForm.dataForm.commitAll();
+			if (isValid) {
+				this.changePasswordForm.dataForm.commitAll();
 
-			this.subscriptions.push(
-				this.userService.changePassword(this.data.newPassword)
-					.subscribe()
-			);
+				this.subscriptions.push(
+					this.userService.changePassword(this.data.newPassword)
+						.subscribe()
+				);
 
-			this.data = { newPassword: '', confirmNewPassword: '' };
+				this.data = { newPassword: '', confirmNewPassword: '' };
 
-			alert({
-				title: 'Success!',
-				okButtonText: 'OK',
-				message: 'Password changed.'
-			});
+				alert({
+					title: 'Success!',
+					okButtonText: 'OK',
+					message: 'Password changed.'
+				});
+			}
 		}
 	}
 }

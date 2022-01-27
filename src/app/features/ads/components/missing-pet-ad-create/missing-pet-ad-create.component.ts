@@ -8,9 +8,10 @@ import { AdsService } from '../../ads.service';
 import { MapModalRootComponent } from '../map-modal-root/map-modal-root.component';
 import * as metadata from './adMetadata.json';
 import { ImageButtonEditorHelper, PositionButtonEditorHelper } from './buttonEditorHelpers';
-import { AgeValidator, EmptyValidator } from './validators';
+import { AgeValidator, ImageValidator, PositionValidator } from './validators';
 
-registerElement('EmptyValidator', () => EmptyValidator);
+registerElement('ImageValidator', () => ImageValidator);
+registerElement('PositionValidator', () => PositionValidator);
 registerElement('AgeValidator', () => AgeValidator);
 
 @Component({

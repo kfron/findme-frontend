@@ -1,9 +1,10 @@
-import { Component, OnDestroy } from '@angular/core';
-import { TextField } from '@nativescript/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { Subscription } from 'rxjs';
-import { User } from '../../../../shared/models/auth.model';
+import { User } from '~/app/shared/models/auth.model';
 import { UserService } from '../../../../shared/services/user.service';
 import { MapService } from './../../../../shared/services/map.service';
+import * as metadata from './signupMetadata.json';
 
 @Component({
 	moduleId: module.id,
@@ -11,67 +12,72 @@ import { MapService } from './../../../../shared/services/map.service';
 	templateUrl: './singup.component.html',
 	styleUrls: ['./singup.component.scss']
 })
-export class SingupComponent implements OnDestroy {
+export class SingupComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription[] = [];
-	private timeouts: NodeJS.Timeout[] = []
 
-	email = '';
-	password = '';
-	confirmPassword = '';
+	@ViewChild('signupForm') signupForm: RadDataFormComponent;
+
+	signupMetadata = JSON.parse(JSON.stringify(metadata));
+	data;
 
 	constructor(
 		private userService: UserService,
 		private mapService: MapService) { }
+
+	ngOnInit(): void {
+		this.data = { email: '', password: '', confirmPassword: '' };
+	}
 
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
 			sub.unsubscribe();
 		}
-		while (this.timeouts.length != 0) {
-			let timeout = this.timeouts.pop();
-			clearTimeout(timeout);
-			timeout = null;
-		}
 	}
 
-	onSignupTap(): void {
-		if (this.email && this.password && this.confirmPassword && this.password === this.confirmPassword) {
-			this.subscriptions.push(this.userService.signup({ email: this.email, password: this.password } as User)
-				.subscribe({
-					error: (err) => {
-						console.log(err.error);
-						alert({
-							title: 'Find Me',
-							okButtonText: 'OK',
-							message: err.error.message
-						});
-						this.email = '';
-						this.password = '';
-						this.confirmPassword = '';
-					},
-					complete: () => {
-						alert({
-							title: 'Find Me',
-							okButtonText: 'OK',
-							message: 'Signup was successful!'
-						});
-						this.mapService.navigateTo(['/home/']);
-					}
-				}));
+	async validateAndCommit() {
+		let isValid = true;
+
+		const pass = this.signupForm.dataForm.getPropertyByName('password');
+		const confirmPass = this.signupForm.dataForm.getPropertyByName('confirmPassword');
+
+		if (confirmPass.valueCandidate !== pass.valueCandidate) {
+			confirmPass.errorMessage = `Password and confirmation don't match`;
+			this.signupForm.dataForm.notifyValidated('confirmPassword', false);
+			isValid = false;
+		} else {
+			this.signupForm.dataForm.notifyValidated('confirmPassword', true);
 		}
 
-	}
+		isValid = isValid && (await this.signupForm.dataForm.validateAll()).valueOf();
+		if (isValid) {
+			this.signupForm.dataForm.commitAll();
 
-	onReturnPress(args) {
-		const textField = <TextField>args.object;
-
-		// Hide keyboard
-		this.timeouts.push(setTimeout(() => {
-			textField.dismissSoftInput();
-		}, 100));
-
-		this[textField.className] = textField.text;
+			this.subscriptions.push(
+				this.userService.signup({ email: this.data.email, password: this.data.password } as User)
+					.subscribe({
+						error: (err) => {
+							console.log(err.error);
+							alert({
+								title: 'Find Me',
+								okButtonText: 'OK',
+								message: err.error.message
+							});
+							this.data.email = '';
+							this.data.password = '';
+							this.data.confirmPassword = '';
+						},
+						complete: () => {
+							alert({
+								title: 'Find Me',
+								okButtonText: 'OK',
+								message: 'Signup was successful!'
+							});
+							this.mapService.navigateTo(['/home/']);
+						}
+					})
+			);
+		}
 	}
 
 	toggleForm() {

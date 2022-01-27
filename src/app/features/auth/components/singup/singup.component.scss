@@ -12,9 +12,12 @@
     width: 80%;
 }
 
-.email, .password, .confirmPassword {
-    font-size: 18;
-    placeholder-color: #A8A8A8;
+DataFormEditorLabel {
+    font-size: 16;
+}
+
+DataFormEditorCore {
+    font-size: 16;
 }
 
 .login-label {

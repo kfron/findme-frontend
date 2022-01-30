@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild, OnInit } from '@angular/core';
 import { RadDataFormComponent } from 'nativescript-ui-dataform/angular';
 import { Subscription } from 'rxjs';
 import { UserService } from '../../../../shared/services/user.service';
@@ -12,20 +12,34 @@ import * as metadata from './loginMetadata.json';
 	templateUrl: './login.component.html',
 	styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
 
 	private subscriptions: Subscription[] = [];
 
-	@ViewChild('loginForm') loginForm: RadDataFormComponent;
-
+	// dane konfiguracyjne formularza
 	loginMetadata = JSON.parse(JSON.stringify(metadata));
-	data = { email: '', password: '' };
+
+	data;
 
 	constructor(
 		private userService: UserService,
 		private mapService: MapService) { }
 
+	/**
+	 * Pobranie odniesienia do formularza stworzonego w pliku HTML.
+	 */
+	@ViewChild('loginForm') loginForm: RadDataFormComponent;
 
+	/**
+	 * Inicjalizuje dane formularza.
+	 */
+	ngOnInit(): void {
+		this.data = { email: '', password: '' };
+	}
+
+	/**
+	 * Przerywa istniejące subskrypcje, gdy komponent zostaje zniszczony
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			let sub = this.subscriptions.pop();
@@ -34,6 +48,12 @@ export class LoginComponent implements OnDestroy {
 		}
 	}
 
+	/**
+	 * Waliduje i aktualizuje pola formularza.
+	 * Jeśli pola są poprawne, to wysyła żądanie weryfikacji użytkownika.
+	 * Poprawna weryfikacja przenosi do widoku głównego.
+	 * Błędna weryfikacja resetuje pola formularza.
+	 */
 	async validateAndCommit() {
 		const isValid = await this.loginForm.dataForm.validateAndCommitAll();
 
@@ -62,7 +82,10 @@ export class LoginComponent implements OnDestroy {
 
 		}
 	}
-	
+
+	/**
+	 * Nawiguje do widoku rejestracji.
+	 */
 	toggleForm() {
 		this.mapService.navigateTo(['/auth/signup']);
 	}

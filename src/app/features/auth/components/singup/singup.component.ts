@@ -15,19 +15,30 @@ import * as metadata from './signupMetadata.json';
 export class SingupComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription[] = [];
 
-	@ViewChild('signupForm') signupForm: RadDataFormComponent;
-
+	// dane konfiguracyjne formularza
 	signupMetadata = JSON.parse(JSON.stringify(metadata));
+
 	data;
 
 	constructor(
 		private userService: UserService,
 		private mapService: MapService) { }
 
+	/**
+	 * Pobranie odniesienia do formularza stworzonego w pliku HTML.
+	 */
+	@ViewChild('signupForm') signupForm: RadDataFormComponent;
+	
+	/**
+	 * Inicjalizuje dane formularza.
+	 */
 	ngOnInit(): void {
 		this.data = { email: '', password: '', confirmPassword: '' };
 	}
 
+	/**
+	 * Przerywa istniejące subskrypcje, gdy komponent zostaje zniszczony
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -35,6 +46,12 @@ export class SingupComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Waliduje i aktualizuje pola formularza.
+	 * Jeśli pola są poprawne, to wysyła żądanie rejestracji użytkownika.
+	 * Poprawna weryfikacja przenosi do widoku głównego.
+	 * Błędna weryfikacja resetuje pola formularza.
+	 */	
 	async validateAndCommit() {
 		let isValid = true;
 
@@ -80,6 +97,9 @@ export class SingupComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Nawiguje do widoku logowania.
+	 */
 	toggleForm() {
 		this.mapService.navigateTo(['/auth']);
 	}

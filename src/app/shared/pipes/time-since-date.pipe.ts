@@ -5,6 +5,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class TimeSinceDatePipe implements PipeTransform {
 
+	/**
+	 * Oblicza czas, który upłynął od podanej daty i formatuje go dzieląc na tygodnie, dni, godziny itd.
+	 * Wynik zawiera maksymalnie dwa składniki, np: 'x tygodni i y dni', 'x dni i y godzin', itp.
+	 * 
+	 * @param foundAt - data, od której liczony będzie upływ czasu
+	 * @returns sformatowany czas, który upłynął od podanej daty
+	 */
 	transform(foundAt: Date): string {
 		const now = Date.now();
 		const diff = Math.abs(now.valueOf() - foundAt.valueOf());

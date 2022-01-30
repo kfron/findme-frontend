@@ -21,6 +21,7 @@ import { ButtonEditorHelper } from './buttonEditorHelper';
 export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription[] = []
 
+	// dane konfiguracyjne formularza
 	adMetadata = JSON.parse(JSON.stringify(metadata));
 	buttonEditorHelper: ButtonEditorHelper;
 	ad: Ad;
@@ -38,8 +39,15 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		private activatedRoute: ActivatedRoute) {
 	}
 
+	/**
+	 * Pobranie odniesienia do formularza stworzonego w pliku HTML.
+	 */
 	@ViewChild('adEditDataForm', { static: false }) adEditDataForm: RadDataFormComponent;
 
+	/**
+	 * Pobranie danych z aktywnej ścieżki nawigacyjnej.
+	 * Inizjalizacja zmiennych dotyczących edytowanego ogłoszenia.
+	 */
 	ngOnInit(): void {
 		const aux = this.activatedRoute.snapshot.params as Ad;
 		this.ad = { name: aux.name, age: aux.age, image: aux.image, description: aux.description } as Ad;
@@ -47,6 +55,9 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		this.url = this.ad.image;
 	}
 
+	/**
+	 * Przerwanie aktywnych subskrypcji w momencie zniszczenia komponentu.
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -54,6 +65,12 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Waliduje i aktualizuje pola formularza.
+	 * Jeśli pola są poprawne i jeśli zdjęcie zostało zmienione to wysyła żądanie aktualizacji wraz ze zdjeciem.
+	 * Jeśli są poprawne, a zdjęcie nie zostało zmienione to wysyła żądanie bez zdjecia.
+	 * W przeciwnym wypadku nic się nie dzieje. 
+	 */
 	async validateAndCommit() {
 		const isValid = await this.adEditDataForm.dataForm.validateAndCommitAll();
 		if (isValid) {
@@ -75,6 +92,13 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Pomocnicza funkcja wykorzystywana przez niestandardowy edytor pola formularza - edytor zdjęcia.
+	 * Pobiera element widoku przedstawiający edytor, nadaje mu nową obsługę zdarzenia kliknięcia
+	 * oraz sposób aktualizacji wartości edytora.
+	 * 
+	 * @param args - obiekt zawierający odniesienie do edytora
+	 */
 	editorNeedsView(args) {
 		if (AndroidApplication) {
 			this.buttonEditorHelper = new ButtonEditorHelper();
@@ -91,14 +115,34 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Pomocnicza funkcja wykorzystywana przez niestandardowy edytor pola formularza - edytor zdjęcia.
+	 * Wywołuje funkcję aktulizacji wartości edytora na pomocniczym obiekcie.
+	 * 
+	 * @param args - obiekt zawierający odniesienie do przycisku edytora oraz nową wartość. 
+	 */
 	editorHasToApplyValue(args) {
 		this.buttonEditorHelper.updateEditorValue(args.view, args.value);
 	}
 
+	/**
+	 * Pomocnicza funkcja wykorzystywana przez niestandardowy edytor pola formularza - edytor zdjęcia.
+	 * Łączy wartość wyświetlaną w edytorze z wartością pomocniczego obiektu.
+	 * 
+	 * @param args - obiekt zawierający wartość edytora
+	 */
 	editorNeedsValue(args) {
 		args.value = this.buttonEditorHelper.buttonValue;
 	}
 
+	/**
+	 * Obsługuje aktualizację wartości edytora.
+	 * Obiektowi pomocniczemu edytora przypisuje pełną wartość - ścieżka wraz z nazwą pliku.
+	 * Ustawia wyświetlaną wartość edytora na nazwę pliku + podpowiedź dla użytkownika.
+	 * 
+	 * @param editorView - obiekt przedstawiający widok edytora
+	 * @param value - nowa wartość edytora
+	 */
 	updateEditorValue(editorView, value) {
 		this.buttonEditorHelper.buttonValue = value;
 		const splitUrl = this.url.split('/');
@@ -109,6 +153,14 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 			editorView.setText(imageName + '\n (tap to change)');
 	}
 
+	/**
+	 * Obsługuję zdarzenie naciśnięcia przycisku edytora przez użytkownika.
+	 * Korzysta z biblioteki ImagePicker, aby wyświetlić dostępne na urządzeniu zdjęcia i umożliwić
+	 * wybór jednego z nich. Wybrane zdjęcie posłuży do stworzenia zgłoszenia.
+	 * 
+	 * @param editorView - obiekt przedstawiający widok edytora
+	 * @param editor - obiekt przedstawiający edytor
+	 */
 	handleTap(editorView, editor) {
 
 		this.context
@@ -129,6 +181,10 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 			});
 	}
 
+	/**
+	 * Obsługa przycisku 'Delete' - wysyła żądanie usunięcia zgłoszenia.
+	 * Wyświetla okno z informacją o sukcesie i nawiguje użytkownika do widoku głównego.
+	 */
 	onDeleteTap() {
 		this.subscriptions.push(
 			this.adsService.deleteAd(this.id).subscribe()
@@ -141,6 +197,9 @@ export class MissingPetAdEditComponent implements OnInit, OnDestroy {
 		this.mapService.navigateTo(['/home/']);
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap() {
 		this.routerExtensions.backToPreviousPage();
 	}

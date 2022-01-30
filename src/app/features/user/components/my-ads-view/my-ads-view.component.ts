@@ -25,6 +25,9 @@ export class MyAdsViewComponent implements OnInit, OnDestroy {
 		private routerExtensions: RouterExtensions
 	) { }
 
+	/**
+	 * Pobiera zgłoszenia stworzone przez zalogowanego użytkownika.
+	 */
 	ngOnInit(): void {
 		this.isBusy = true;
 		this.subscriptions.push(this.userService
@@ -36,6 +39,9 @@ export class MyAdsViewComponent implements OnInit, OnDestroy {
 		);
 	}
 
+	/**
+	 * Przerywa istniejące subskrypcje, gdy komponent zostaje zniszczony
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -43,6 +49,9 @@ export class MyAdsViewComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap() {
 		this.routerExtensions.backToPreviousPage();
 	}

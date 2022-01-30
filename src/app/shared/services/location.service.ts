@@ -19,6 +19,12 @@ export class LocationService {
 
 	position$: Subject<Position> = new Subject();
 
+	/**
+	 * Weryfikuje, czy aplikacja ma dostęp do danych nawigacyjnych.
+	 * Jeśli nie, to prosi o ich włączenie.
+	 * W przypadku zaakceptowania rozpoczyna nasłuchiwanie zmian pozycji urządzenia i 
+	 * odpowiednio ją emituje do użytku innych komponentów.
+	 */
 	constructor() {
 		isEnabled()
 			.then(
@@ -54,6 +60,11 @@ export class LocationService {
 			);
 	}
 
+	/**
+	 * Pobiera obecną lokację urządzenia i mapuje ją do typu Position.
+	 * 
+	 * @returns obecną pozycję urządzenia
+	 */
 	async getCurrentLocation(): Promise<Position> {
 		return Position.positionFromLatLng(this._location.latitude, this._location.longitude);
 	}

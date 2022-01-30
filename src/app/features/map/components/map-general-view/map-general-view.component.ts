@@ -1,3 +1,4 @@
+import { TimeSinceDatePipe } from './../../../../shared/pipes/time-since-date.pipe';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { registerElement, RouterExtensions } from '@nativescript/angular';
 import { Color, NavigatedData, Page } from '@nativescript/core';
@@ -20,11 +21,12 @@ const zoomOptions: number[] = [15, 14, 11.7];
 export class MapGeneralViewComponent implements OnInit, OnDestroy {
 	private subscriptions: Subscription[] = []
 
-	// Key - ad id, Value - marker
-	// Marker mapped to the ad should always represent the newest location in path
+	/**
+	 * Klucz - id zgłoszenia, Wartość - znacznik
+	 * Znacznik zmapowany do zgłoszenia powinien zawsze reprezentować najnowszą lokalizację na ścieżce
+	 */
 	private closestMap: Map<number, Marker> = new Map();
 
-	// Helper array to manage path
 	private pathAdId: number = null;
 	private shapePath: Shape[] = [];
 
@@ -39,10 +41,16 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		private mapService: MapService,
 		private routerExtensions: RouterExtensions,
 		private locationService: LocationService,
+		private timeSinceDatePipe: TimeSinceDatePipe,
 		private page: Page) {
 		this.page.on(Page.navigatedToEvent, (data: NavigatedData) => this.onNavigatedTo(data));
 	}
 
+	/**
+	 * Rozpoczyna obserwację aktualnej pozycji urządzenia - w razie zmiany przesuwa wizualizację promienia wyszukiwania.
+	 * Jeśli ogłoszenie znajdzie się poza zasięgiem wyszukiwania liczonym od obecnej pozycji, to zostaje usunięte z mapy.
+	 * Jeśli ogłoszenie znajdzie się w zasięgu - zostaje dodane.
+	 */
 	ngOnInit(): void {
 		this.subscriptions.push(
 			this.locationService.position$.subscribe(
@@ -64,6 +72,9 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		);
 	}
 
+	/**
+	 * Przerywa istniejące subskrypcje, gdy komponent zostaje zniszczony
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -71,6 +82,14 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Zdarzenie aktywowane przez komponent MapView.
+	 * Inicjalizuje mapę i ustawia jej parametry.
+	 * Pobiera zgłoszenia z okolicy urządzenia.
+	 * Wywołuje funkcje rysowania znaczników i okrągu zasięgu wyszukiwania. 
+	 * 
+	 * @param event - obiekt zawierający odniesienie do mapy
+	 */
 	async onMapReady(event) {
 		this.currentPosition = await this.locationService.getCurrentLocation();
 
@@ -101,26 +120,36 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		this.mapView.myLocationEnabled = true;
 	}
 
+	/**
+	 * Obsługuje zdarzenie naciśnięcia znacznika na mapie.
+	 * Wyświetla okno z wybranymi informacjami zgłoszenia.
+	 * 
+	 * @param event - dane zdarzenia naciśniecia znacznika. 
+	 */
 	onMarkerSelect(event: MarkerEventData) {
 		if (event.marker.userData?.id) {
-			event.marker.snippet = this.formatTimeSnippet(event.marker.userData.found_at);
+			event.marker.snippet = this.timeSinceDatePipe.transform(event.marker.userData.found_at);
 			this.drawLine(event.marker.userData.id);
 		}
 	}
 
+	/**
+	 * Weryfikuje zmapowane zgłoszenia z nowo-pobranymi.
+	 * Usuwa ze słownika te, które są poza zasięgiem. Dodaje te, których wcześniej nie było. 
+	 * 
+	 */
 	setupAdMarkers() {
-		// synchronise currently displayed markers with new set of findings
+
+		// Blok odpowiedzialny za usunięcie zgłoszeń spoza zasięgu, lub aktualizację mapowania, jeśli jest w zasięgu, ale zmieniły się dane.
 		this.closestMap.forEach(
 			(value, key) => {
 				const finding = this.closestFindings.find(finding => finding.ad_id === key);
-				// finding that is currently displayed, but was not returned in latest http call should be removed
 				if (finding === undefined) {
 					if (key === this.pathAdId && this.shapePath.length !== 0)
 						this.clearPath();
 					this.mapView.removeMarker(value);
 					this.closestMap.delete(key);
 				} else {
-					// map that keeps the markers maps them based on the id of ad that they belong to - check if the finding for that ad is new
 					if (value.userData.id !== finding.id) {
 						value.position = finding.position;
 						value.userData = {
@@ -131,7 +160,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 							next_id: finding.next_id
 						};
 						value.title = `${finding.name}, ${finding.age}`;
-						value.snippet = this.formatTimeSnippet(finding.found_at);
+						value.snippet = this.timeSinceDatePipe.transform(finding.found_at);
 						this.closestMap.set(key, value);
 					}
 					const id = this.closestFindings.indexOf(finding);
@@ -140,6 +169,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 			}
 		);
 
+		// Dodanie do mapy wizualizacji zgłoszeń, których nie zostały usunięte w poprzednim bloku, czyli są nowe.
 		for (let i = 0; i < this.closestFindings.length; i++) {
 			const marker = new Marker();
 			const find = this.closestFindings[i];
@@ -153,7 +183,7 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 				next_id: find.next_id
 			};
 			marker.title = `${find.name}, ${find.age}`;
-			marker.snippet = this.formatTimeSnippet(find.found_at);
+			marker.snippet = this.timeSinceDatePipe.transform(find.found_at);
 			this.closestMap.set(find.ad_id, marker);
 			this.mapView.addMarker(marker);
 		}
@@ -161,6 +191,9 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 
 	}
 
+	/**
+	 * Inicjalizuje okrąg przedstawiający zasięg wyświetlania zgłoszeń i dodaje go do mapy.
+	 */
 	setupSearchCircle() {
 		this.searchCircle = new Circle();
 		this.searchCircle.center = this.currentPosition;
@@ -172,33 +205,27 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		this.mapView.addCircle(this.searchCircle);
 	}
 
+	/**
+	 * Aktualizuje pozycję i promień okrągu zasięgu wyświetlania zgłoszeń.
+	 */
 	updateSearchCircle() {
 		this.searchCircle.center = this.currentPosition;
 		this.searchCircle.radius = this.mapService.searchRadius * 1000;
 	}
 
-	formatTimeSnippet(foundAt: Date) {
-		const now = new Date();
-		const diff = Math.abs(now.valueOf() - foundAt.valueOf());
-		const weeks = Math.floor(diff / 604800000);
-		const days = Math.floor((diff - weeks * 604800000) / 86400000);
-		const hours = Math.floor((diff - weeks * 604800000 - days * 86400000) / 3600000);
-		const minutes = Math.floor((diff - weeks * 604800000 - days * 86400000 - hours * 3600000) / 60000);
-		let result = '';
-		result += weeks === 1 ? ' week ' : weeks > 1 ? ' weeks ' : '';
-		result += days === 1 ? days + ' day ' : days > 1 ? days + ' days ' : '';
-		if (weeks > 0) return result + 'ago';
-		result += hours === 1 ? hours + ' hour ' : hours > 1 ? hours + ' hours ' : '';
-		if (days > 0) return result + 'ago';
-		result += minutes === 1 ? minutes + ' minute ' : minutes > 1 ? minutes + ' minutes ' : '';
-		return result + 'ago';
-	}
-
+	/**
+	 * Usuwa z mapy kształty tworzącę wyświetlaną ścieżkę i resetuje tablicę.
+	 */
 	clearPath() {
 		this.shapePath.forEach(val => this.mapView.removeShape(val));
 		this.shapePath = [];
 	}
 
+	/**
+	 * Pobiera ścieżkę i rysuje na mapie jej wizualizację złożoną z linii i okrągów.
+	 * 
+	 * @param startId - id zgłoszenia, dla którego zwrócić ścieżkę
+	 */
 	drawLine(startId: number) {
 		this.clearPath();
 		this.subscriptions.push(this.mapService
@@ -235,12 +262,22 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 
 	}
 
+	/**
+	 * Obsługa zdarzenia wywołanego przez naciśnięcie okienka wyświetlonego po dotknięciu znacznika na mapie.
+	 * Nawiguje do widoku szczegółowego zgłoszenia, którego dotyczy znacznik.
+	 * 
+	 * @param event - dane zdarzenia naciśnięcia znacznika.
+	 */
 	onInfoWindowTap(event: MarkerEventData) {
 		if (event.marker.userData?.id) {
 			this.mapService.navigateTo(['/home/ad-details', event.marker.userData.ad_id]);
 		}
 	}
 
+	/**
+	 * Obsługuje zdarzenie cofnięcia się z innego widoku do tego komponentu
+	 * @param data - Dane wygenerowane ze zdarzenia nawigacji
+	 */
 	onNavigatedTo(data: NavigatedData) {
 		if (data.isBackNavigation) {
 			this.updateSearchCircle();
@@ -253,6 +290,11 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Obsługuje przycisk zmiany zasięgu poszukiwań.
+	 * Aktualizuje wyświetlany napis, ustawia odpowiedni zoom i pobiera nową ilość zgłoszeń z okolicy.
+	 * Usuwa aktywną ścieżkę i aktualizuje okrąg poszukiwań.
+	 */
 	onToggleRadiusTap() {
 		this.mapService.toggleSearchRadius();
 		this.toggleRadiusText = `Toggle radius (${this.mapService.searchRadius} km)`;
@@ -267,6 +309,9 @@ export class MapGeneralViewComponent implements OnInit, OnDestroy {
 		this.updateSearchCircle();
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap() {
 		this.routerExtensions.backToPreviousPage();
 	}

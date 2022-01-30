@@ -28,6 +28,12 @@ export class MapService {
 		private userService: UserService,
 		private routerExtensions: RouterExtensions) { }
 
+	/**
+	 * Mapuje pola zgłoszenia na ich poprawne odpowiedniki, usuwa niepotrzebne artefakty.
+	 * 
+	 * @param finding - napotkanie w surowej wersji
+	 * @returns - poprawnie sformatowane napotkanie
+	 */
 	private mapFinding(finding): Finding {
 		finding.found_at = new Date(finding.found_at);
 		finding.position = Position.positionFromLatLng(finding.lat, finding.lon);
@@ -45,10 +51,20 @@ export class MapService {
 		return this._searchRadiusIndex;
 	}
 
+	/**
+	 * Przestawia promień poszukiwań na kolejną z trzech wartości.
+	 */
 	toggleSearchRadius() {
 		this._searchRadiusIndex = (this._searchRadiusIndex + 1) % 3;
 	}
 
+	/**
+	 * Funkcja opakowująca nawigowanie do innych stron.
+	 * Dodaje do każdego konfigurację przejścia.
+	 * 
+	 * @param commands - docelowa ścieżka i parametry
+	 * @param extras - dodatkowe komendy
+	 */
 	navigateTo(commands, extras?: ExtendedNavigationExtras) {
 		this.routerExtensions.navigate(commands, {
 			...extras,
@@ -61,6 +77,14 @@ export class MapService {
 		});
 	}
 
+	/**
+	 * Wysyła żądanie typu GET do serwera z prośbą o listę najbliższych napotkań.
+	 * 
+	 * @param lat - szerokość geograficzna
+	 * @param lon - wysokość geograficzna
+	 * @param dist - lista zgłoszeń w odległości promienia określonego w serwisie MapService 
+	 * @returns - najbliższe napotkania
+	 */
 	getClosestTo(lat: number, lon: number, dist: number): Observable<Finding[]> {
 		const url = `${this.baseUrl}/${ApiPaths.map}/getClosestTo`;
 		const params = new HttpParams()
@@ -75,6 +99,12 @@ export class MapService {
 		})) as Observable<Finding[]>);
 	}
 
+	/**
+	 * Wysyła żądanie typu GET do serwera z prośbą o ścieżkę napotkań.
+	 * 
+	 * @param startId - zgłoszenie będące końcem ścieżki
+	 * @returns - listę napotkań przedstawiającą ścieżkę
+	 */
 	getPath(startId: number): Observable<Finding[]> {
 		const url = `${this.baseUrl}/${ApiPaths.map}/getPath`;
 		const params = new HttpParams()
@@ -87,6 +117,12 @@ export class MapService {
 		})) as Observable<Finding[]>);
 	}
 
+	/**
+	 * Wysyła żądanie typu GET do serwera z prośbą o najnowsze napotkanie konkretnego zgłoszenia.
+	 * 
+	 * @param adId - id zgłoszenia
+	 * @returns najnowsze napotkanie dotyczące zgłoszenia o podanym id
+	 */
 	getNewestFinding(adId: number) {
 		const url = `${this.baseUrl}/${ApiPaths.map}/getNewestFinding`;
 		const params = new HttpParams()
@@ -99,6 +135,13 @@ export class MapService {
 		})) as Observable<Finding[]>);
 	}
 
+	/**
+	 * Wysyła żądanie typu POST do serwera z prośbą o utworzenie nowego napotkania dla danego zgłoszenia.
+	 * 
+	 * @param adId - id zgłoszenia
+	 * @param lat - szerokość geograficzna
+	 * @param lon - wysokość geograficzna
+	 */
 	createFinding(adId: number, lat: number, lon: number) {
 		const url = `${this.baseUrl}/${ApiPaths.map}/createFinding`;
 		const userId = this.userService.currentUser.id;

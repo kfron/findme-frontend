@@ -14,6 +14,9 @@ export class MapModalRootComponent implements OnInit {
 		private activatedRoute: ActivatedRoute
 	) { }
 
+	/**
+	 * Nawiguje do widoku okna modalnego
+	 */
 	ngOnInit(): void {
 		this.mapService.navigateTo(['modal-view'], { relativeTo: this.activatedRoute });
 	}

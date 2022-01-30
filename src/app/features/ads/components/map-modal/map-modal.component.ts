@@ -31,6 +31,10 @@ export class MapModalComponent implements OnInit, OnDestroy {
 	) {
 	}
 
+	/**
+	 * Pobiera kontekst wywołania z parametrów.
+	 * Przewiduje dwa tryby pracy - tryb zgłaszania napotkania i tryb rysowania ścieżki.
+	 */
 	ngOnInit(): void {
 		if (this.params.context.pinpointMode !== undefined) {
 			this.pinpointMode = false;
@@ -39,6 +43,9 @@ export class MapModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Przerywa wszystkie aktywne subskrypcje w momencie zniszczenia komponentu.
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -46,6 +53,14 @@ export class MapModalComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Zdarzenie aktywowane przez komponent MapView.
+	 * Inicjalizuje mapę, ustawia jej parametry i w zależności od trybu:
+	 * 	- zgłaszanie napotkania : daje możliwość ustawienia znacznika
+	 * 	- rysowania ścieżki: pobiera najnowszy element ścieżki i wywołuje funkcję rysowania
+	 * 
+	 * @param event - obiekt zawierający odniesienie do mapy
+	 */
 	async onMapReady(event) {
 		this.mapView = event.object as MapView;
 		
@@ -92,6 +107,13 @@ export class MapModalComponent implements OnInit, OnDestroy {
 
 	}
 
+	/**
+	 * Resetuje obecnie narysowaną ścieżkę, pobiera dane do nowej.
+	 * Dla każdego punktu na ścieżce dodaje okrąg oznaczający prawdopodobny zasięg oddalenia się.
+	 * Wszystkie punkty połączone zostają linią.
+	 * 
+	 * @param startId - id napotkania, który stanowi najnowszy element ścieżki 
+	 */
 	drawRoute(startId) {
 		this.subscriptions.push(
 			this.mapService.getPath(startId)
@@ -124,12 +146,20 @@ export class MapModalComponent implements OnInit, OnDestroy {
 				}));
 	}
 
+	/**
+	 * Obsługuje zdarzenie naciśnięcia znacznika - usuwa go.
+	 */
 	onMarkerSelect() {
 		this.mapView.removeAllMarkers();
 		this.markerPosition = null;
 		this.isEnabled = false;
 	}
 
+	/**
+	 * Obsługuje zdarzenie naciśnięcia miejsca na mapie - tworzy w tym miejscu nowy znacznik.
+	 * 
+	 * @param event - dane zdarzenia wygenerowanego po naciśnięciu mapy
+	 */
 	onCoordinateTap(event: PositionEventData) {
 		this.mapView.removeAllMarkers();
 
@@ -141,14 +171,25 @@ export class MapModalComponent implements OnInit, OnDestroy {
 		this.isEnabled = true;
 	}
 
+	/**
+	 * Obsługuje zdarzenie przesunięcia znacznika na mapie.
+	 * 
+	 * @param event - dane zdarzenia wygenerowanego przez przeciągnięcie znacznika.
+	 */
 	onMarkerDrag(event: MarkerEventData) {
 		this.markerPosition = event.marker.position;
 	}
 
+	/**
+	 * Obsługuje zatwierdzenie wyboru przez użytkownika. Zamyka okno i przesyła dane zwrotne.
+	 */
 	onSubmitTap() {
 		this.params.closeCallback(this.markerPosition);
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap() {
 		this.params.closeCallback();
 	}

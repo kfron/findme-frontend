@@ -17,22 +17,37 @@ export class UserGeneralViewComponent {
 		private mapService: MapService
 	) { }
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap() {
 		this.routerExtensions.backToPreviousPage();
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do widoku edycji danych użytkownika.
+	 */
 	onEditTap() {
 		this.mapService.navigateTo(['/user/edit']);
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do widoku zgłoszeń użytkownika.
+	 */
 	onMyAdsTap() {
 		this.mapService.navigateTo(['/user/ads']);
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do widok uzgłoszeń, przy których użytkownik pomagał.
+	 */
 	onMyPingsTap() {
 		this.mapService.navigateTo(['/user/pings']);
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - wylogowuje użytkownika i nawiguje do widoku logowania.
+	 */
 	onLogoutTap() {
 		this.userService.currentUser = undefined;
 		this.mapService.navigateTo(['/auth']);

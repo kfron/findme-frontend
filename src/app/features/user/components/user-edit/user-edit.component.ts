@@ -11,6 +11,9 @@ export class UserEditComponent {
 		private routerExtensions: RouterExtensions
 	) { }
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap() {
 		this.routerExtensions.backToPreviousPage();
 	}

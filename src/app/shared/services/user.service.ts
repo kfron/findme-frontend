@@ -11,11 +11,25 @@ import { ApiPaths, environment } from './../../../../environment';
 })
 export class UserService {
 	baseUrl = environment.baseUrl;
-
+	
 	private _currentUser: User;
-
+	
 	constructor(private http: HttpClient) { }
+	
+	get currentUser(): User {
+		return this._currentUser;
+	}
 
+	set currentUser(user: User) {
+		this._currentUser = user;
+	}
+	
+	/**
+	 * Mapuje pola zgłoszenia na ich poprawne odpowiedniki, usuwa niepotrzebne artefakty.
+	 * 
+	 * @param ad - zgłoszenie w surowej wersji
+	 * @returns - poprawnie sformatowane zgłoszenie
+	 */
 	private mapAd(ad): Ad {
 		ad.found_at = new Date(ad.found_at);
 		ad.image = `${this.baseUrl}/${ad.image}`;
@@ -25,6 +39,14 @@ export class UserService {
 		return ad as Ad;
 	}
 
+	/**
+	 * Wysyła żądanie typu POST z prośbą o zweryfikowanie użytkownika.
+	 * Inicjalizuje zmienną przechowującą dane użytkownika.
+	 * 
+	 * @param email - email użytkownika 
+	 * @param password - hasło użytkownika
+	 * @returns - obiekt przechowujący dane użytkownika wraz z zaszyfrowanym hasłem
+	 */
 	login(email: string, password: string): Observable<User> {
 		const url = `${this.baseUrl}/${ApiPaths.users}/login`;
 		const observable = (this.http.post(url, { email: email, password: password }) as Observable<User>);
@@ -32,6 +54,13 @@ export class UserService {
 			tap(user => this.currentUser = user)));
 	}
 
+	/**
+	 * Wysyła żądanie typu POST z prośbą o utworzenie użytkownika.
+	 * Inicjalizuje zmienną przechowującą dane użytkownika.
+	 * 
+	 * @param user - dane do rejestracji użytkownika
+	 * @returns - obiekt przechowujący dane użytkownika wraz z zaszyfrowanym hasłem
+	 */
 	signup(user: User): Observable<User> {
 		const url = `${this.baseUrl}/${ApiPaths.users}/signup`;
 		const observable = (this.http.post(url, user) as Observable<User>);
@@ -39,6 +68,13 @@ export class UserService {
 			tap(user => this.currentUser = user)));
 	}
 
+	/**
+	 * Wysyła żądanie typu PUT z prośbą o aktualizację emaila użytkownika.
+	 * Aktualizuje zmienną użytkownika.
+	 * 
+	 * @param email - nowy mail 
+	 * @returns - obiekt przechowujący dane użytkownika wraz z zaszyfrowanym hasłem
+	 */
 	changeEmail(email: string) {
 		const url = `${this.baseUrl}/${ApiPaths.users}/changeEmail`;
 
@@ -50,6 +86,13 @@ export class UserService {
 			tap(user => this.currentUser = user)));
 	}
 
+	/**
+	 * Wysyła żądanie typu PUT z prośbą o aktualizację hasła użytkownika.
+	 * Aktualizuje zmienną użytkownika.
+	 * 
+	 * @param password - nowe hasło
+	 * @returns - obiekt przechowujący dane użytkownika wraz z zaszyfrowanym hasłem
+	 */
 	changePassword(password: string) {
 		const url = `${this.baseUrl}/${ApiPaths.users}/changePassword`;
 
@@ -62,6 +105,11 @@ export class UserService {
 			tap(user => this.currentUser = user)));
 	}
 
+	/**
+	 * Wysyła żądanie typu GET z prośbą o listę zgłoszeń użytkownika.
+	 * 
+	 * @returns listę poprawnie sformatowanych zgłoszeń użytkownika
+	 */
 	getMyAds(): Observable<Ad[]> {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/getMyAds`;
 
@@ -75,6 +123,11 @@ export class UserService {
 		})) as Observable<Ad[]>);
 	}
 
+	/**
+	 * Wysyła żądanie typu GET z prośbą o listę zgłoszeń, przy których pomagał użytkownik.
+	 * 
+	 * @returns listę poprawnie sformatowanych zgłoszeń, przy których pomagał użytkownik
+	 */
 	getMyPings(): Observable<Ad[]> {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/getMyPings`;
 
@@ -88,12 +141,5 @@ export class UserService {
 		})) as Observable<Ad[]>);
 	}
 
-	get currentUser(): User {
-		return this._currentUser;
-	}
-
-	set currentUser(user: User) {
-		this._currentUser = user;
-	}
 
 }

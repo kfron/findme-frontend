@@ -24,6 +24,9 @@ export class MyPingsViewComponent implements OnInit, OnDestroy {
 		private routerExtensions: RouterExtensions
 	) { }
 
+	/**
+	 * Pobiera zgłoszenia, przy których użytkownik pomagał.
+	 */
 	ngOnInit(): void {
 		this.isBusy = true;
 		this.subscriptions.push(this.userService
@@ -35,6 +38,9 @@ export class MyPingsViewComponent implements OnInit, OnDestroy {
 		);
 	}
 
+	/**
+	 * Przerywa istniejące subskrypcje, gdy komponent zostaje zniszczony
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -42,6 +48,9 @@ export class MyPingsViewComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Obsługa przycisku powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap() {
 		this.routerExtensions.backToPreviousPage();
 	}

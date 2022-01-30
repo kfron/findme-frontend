@@ -44,6 +44,11 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 
 	ad: Ad = undefined
 
+	/**
+	 * Pobranie id zgłoszenia z aktywnej ścieżki nawigacyjnej.
+	 * Inizjalizacja kontekstu dla okna modalnego.
+	 * Pobranie pełnych danych wyświetlanego zgłoszenia.
+	 */
 	ngOnInit(): void {
 		const id = +this.activatedRoute.snapshot.params.id;
 		if (id) {
@@ -60,6 +65,9 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Przerwanie aktywnych subskrypcji w momencie zniszczenia komponentu.
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -67,22 +75,39 @@ export class MissingPetAdDetailsComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	/**
+	 * Obsługuje przycisk powrotu - nawiguje do poprzedniej strony.
+	 */
 	onBackButtonTap(): void {
 		this.routerExtensions.backToPreviousPage();
 	}
 
+	/**
+	 * Obsługuje przycisk 'Edit' - nawiguje do widoku edycji zgłoszenia i załącza dane zgłoszenia.
+	 */
 	onEditTap(): void {
 		this.mapService.navigateTo(['/home/ad-edit', this.ad.id, this.ad.user_id, this.ad.name, this.ad.age, this.ad.image, this.ad.description]);
 	}
 
+	/**
+	 * Obsługuje przycisk 'Ping' - nawiguje do widoku dodania informacji o napotkaniu i załącza id zgłoszenia.
+	 */
 	onPingTap(): void {
 		this.mapService.navigateTo(['/map/ping', this.ad.id]);
 	}
 
+	/**
+	 * Obsługuje przycisk 'Show route' - wywołuje okno modalne ze ścieżką i przekazuje parametry konfiguracyjne.
+	 */
 	async onShowRouteTap() {
 		await this.modalService.showModal(MapModalRootComponent, this.options);
 	}
 
+
+	/**
+	 * Obsługuje zdarzenie cofnięcia się z innego widoku do tego komponentu
+	 * @param data - Dane wygenerowane ze zdarzenia nawigacji
+	 */
 	onNavigatedTo(data: NavigatedData) {
 		if (data.isBackNavigation) {
 			this.isBusy = true;

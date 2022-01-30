@@ -26,6 +26,9 @@ export class AdsListComponent implements OnInit {
 		private locationService: LocationService
 	) { }
 
+	/**
+	 * Pobiera lokalizację urządzenia oraz rozpoczyna obserwację pod kątem jej zmian.
+	 */
 	async ngOnInit() {
 		this.currentPosition = await this.locationService.getCurrentLocation();
 
@@ -36,6 +39,11 @@ export class AdsListComponent implements OnInit {
 		);
 	}
 
+	/**
+	 * Obsługuje naciśnięcie elementu na liście. Nawiguje do widoku szczegółowego.
+	 * 
+	 * @param args 
+	 */
 	onAdItemTap(args: ListViewEventData) {
 		const tappedAdItem = (args.view.bindingContext as Ad);
 		this.mapService.navigateTo(['/home/ad-details', tappedAdItem.id]);

@@ -9,6 +9,10 @@ export class AppComponent implements OnInit {
 	constructor(
 		private locationService: LocationService
 	) { }
+	
+	/**
+	 * Rozpoczyna nasłuchiwanie zmian pozycji urządzenia.
+	 */
 	ngOnInit() {
 		this.locationService.position$.subscribe();
 	}

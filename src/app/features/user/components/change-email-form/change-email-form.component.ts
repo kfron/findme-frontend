@@ -14,8 +14,7 @@ import * as metadata from './emailMetadata.json';
 export class ChangeEmailFormComponent implements OnDestroy {
 	private subscriptions: Subscription[] = []
 
-	@ViewChild('changeEmailForm') changeEmailForm: RadDataFormComponent;
-
+	// dane konfiguracyjne formularza
 	emailMetadata = JSON.parse(JSON.stringify(metadata));
 	data = { email: '' };
 
@@ -23,6 +22,14 @@ export class ChangeEmailFormComponent implements OnDestroy {
 		private userService: UserService
 	) { }
 
+	/**
+	 * Pobranie odniesienia do formularza stworzonego w pliku HTML.
+	 */
+	@ViewChild('changeEmailForm') changeEmailForm: RadDataFormComponent;
+
+	/**
+	 * Przerywa istniejące subskrypcje, gdy komponent zostaje zniszczony
+	 */
 	ngOnDestroy(): void {
 		while (this.subscriptions.length != 0) {
 			const sub = this.subscriptions.pop();
@@ -30,6 +37,12 @@ export class ChangeEmailFormComponent implements OnDestroy {
 		}
 	}
 
+	/**
+	 * Waliduje i aktualizuje pola formularza.
+	 * Jeśli pola są poprawne, to wysyła żądanie zmiany maila użytkownika.
+	 * Poprawna weryfikacja powoduje wyświetlenie okna z informacją o sukcesie.
+	 * Błędna weryfikacja resetuje pola formularza.
+	 */	
 	async validateAndCommit() {
 		const isValid = await this.changeEmailForm.dataForm.validateAndCommitAll();
 

@@ -23,6 +23,12 @@ export class AdsService {
 		private routerExtensions: RouterExtensions,
 		private mapService: MapService) { }
 
+	/**
+	 * Mapuje pola zgłoszenia na ich poprawne odpowiedniki, usuwa niepotrzebne artefakty.
+	 * 
+	 * @param ad - zgłoszenie w surowej wersji
+	 * @returns - poprawnie sformatowane zgłoszenie
+	 */
 	private mapAd(ad): Ad {
 		ad.found_at = new Date(ad.found_at);
 		ad.image = `${this.baseUrl}/${ad.image}`;
@@ -32,6 +38,14 @@ export class AdsService {
 		return ad as Ad;
 	}
 
+	/**
+	 * Wysyła żądanie typu GET do serwera z prośbą o listę zgłoszeń z okolicy.
+	 * 
+	 * @param lat - szerokość geograficzna
+	 * @param lon - wysokość geograficzna
+	 * @returns - lista zgłoszeń w odległości promienia określonego w serwisie MapService 
+	 * od podanych współrzędnych
+	 */
 	getAdsList(lat, lon): Observable<Ad[]> {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/getAdsList`;
 		const params = new HttpParams()
@@ -46,6 +60,12 @@ export class AdsService {
 		})) as Observable<Ad[]>);
 	}
 
+	/**
+	 * Wysyła żądanie typu GET do serwera z prośbą o konkretne zgłoszenie.
+	 * 
+	 * @param id - id żądanego zgłoszenia
+	 * @returns - zgłoszenie o id równym podanemu parametrowi
+	 */
 	getAdByid(id: number): Observable<Ad> {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/getAd`;
 		const params = new HttpParams()
@@ -55,6 +75,15 @@ export class AdsService {
 		return (observable.pipe(map(ad => this.mapAd(ad))) as Observable<Ad>);
 	}
 
+	/**
+	 * Wysyła żądanie typu POST do serwera z prośbą o stworzenie zgłoszenia.
+	 * 
+	 * @param name - imię zwierzęcia ze zgłoszenia
+	 * @param age - wiek zwierzęcia
+	 * @param image - zdjęcie zwierzęcia
+	 * @param description - opis zwierzęcia
+	 * @param pos - przybliżone miejsce zaginięcia zwierzęcia
+	 */
 	createAd(name, age, image, description, pos: string) {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/createAd`;
 		const split = pos.split(' ');
@@ -91,6 +120,16 @@ export class AdsService {
 		});
 	}
 
+	/**
+	 * Wysyła żądanie typu PUT do serwera z prośbą o akutalizację zgłoszenia.
+	 * Ta wersja funkcjonalności aktualizacji zgłoszenia zawiera przesyłanie nowego zdjęcia.
+	 * 
+	 * @param id - id zgłoszenia do aktualizacji
+	 * @param name - imię zwierzęcia ze zgłoszenia
+	 * @param age - wiek zwierzęcia
+	 * @param image - zdjęcie zwierzęcia
+	 * @param description - opis zwierzęcia
+	 */
 	updateAdWithImage(id, name, age, image, description) {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/updateAd`;
 		const sess = session('file-upload');
@@ -121,6 +160,15 @@ export class AdsService {
 		});
 	}
 
+	/**
+	 * Wysyła żądanie typu PUT do serwera z prośbą o akutalizację zgłoszenia.
+	 * Ta wersja funkcjonalności aktualizacji zgłoszenia nie zawiera przesyłania nowego zdjęcia.
+	 * 
+	 * @param id - id zgłoszenia do aktualizacji
+	 * @param name - imię zwierzęcia ze zgłoszenia
+	 * @param age - wiek zwierzęcia
+	 * @param description - opis zwierzęcia
+	 */
 	updateAdWithoutImage(id, name, age, description) {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/updateAd`;
 		const params = new HttpParams()
@@ -132,6 +180,11 @@ export class AdsService {
 		return this.http.put(url, params);
 	}
 
+	/**
+	 * Wysyła żądanie typu DELETE do serwera z prośbą o usunięcie zgłoszenia.
+	 * 
+	 * @param id - id zgłoszenia do usunięcia
+	 */
 	deleteAd(id) {
 		const url = `${this.baseUrl}/${ApiPaths.ads}/deleteAd`;
 		const params = new HttpParams().set('id', id);

@@ -10,6 +10,15 @@ export class DistanceFromPipe implements PipeTransform {
 		return Math.round(n * 100) / 100;
 	}
 
+	/**
+	 * Oblicza przybliżoną, rzeczywistą odległość pomiędzy dwoma punktami.
+	 * Wynik jest formatowany pod kątem rzędu wielkości. Jeśli odległość to mniej niż 1 kilometr
+	 * to wynik jest w metrach, jeśli więcej to w kilometrach.
+	 * 
+	 * @param a - współrzędne kartograficzne pierwszego punktu
+	 * @param b - współrzędne kartograficzne drugiego punktu
+	 * @returns sformatowaną odległość między podanymi punktami w postaci napisu 
+	 */
 	transform(a: Position, b: Position): string {
 		const R = 6371.0710; // Radius of the Earth in miles
 		const rlat1 = a.latitude * (Math.PI / 180); // Convert degrees to radians
